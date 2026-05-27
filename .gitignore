@@ -1,0 +1,27 @@
+# Build
+  bin/
+  obj/
+  node_modules/
+  target/
+  __pycache__/
+  dist/
+  build/
+
+  # Secrets
+  .env
+  *.env
+  appsettings.json
+  *.pfx
+  *.cer
+  *.key
+
+  # IDE
+  .vscode/
+  .idea/
+
+  # OS
+  .DS_Store
+  Thumbs.db
+
+  # Logs
+  *.log

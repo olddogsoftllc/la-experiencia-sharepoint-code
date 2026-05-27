@@ -1,0 +1,31 @@
+{
+  "name": "la-experiencia-sharepoint-code",
+  "version": "1.0.0",
+  "description": "Código de ejemplos para La Experiencia SharePoint: Desarrollo con Microsoft Graph",
+  "scripts": {
+    "auth": "node capitulo-02-auth/javascript/auth-flow.js",
+    "sites": "node capitulo-03-sitios/javascript/site-operations.js",
+    "documents": "node capitulo-04-documentos/javascript/document-operations.js",
+    "permissions": "node capitulo-05-permisos/javascript/permission-operations.js",
+    "metadata": "node capitulo-06-metadata/javascript/metadata-operations.js",
+    "automation": "node capitulo-07-automatizacion/javascript/workflow-operations.js",
+    "integrador": "node proyecto-integrador/javascript/workflow-complete.js"
+  },
+  "keywords": [
+    "microsoft-graph",
+    "sharepoint",
+    "microsoft-365",
+    "oauth2",
+    "msal"
+  ],
+  "author": "La Experiencia SharePoint",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@azure/identity": "^4.0.0",
+    "@microsoft/microsoft-graph-client": "^3.0.0",
+    "dotenv": "^16.4.0"
+  }
+}

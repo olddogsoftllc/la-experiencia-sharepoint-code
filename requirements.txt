@@ -1,0 +1,10 @@
+# La Experiencia SharePoint - Dependencias Python
+# Microsoft Graph SDK
+msgraph-sdk>=1.0.0
+
+# Azure Identity
+azure-identity>=1.15.0
+
+# Utilidades
+python-dotenv>=1.0.0
+python-dateutil>=2.8.2
