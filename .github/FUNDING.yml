@@ -1,0 +1,18 @@
+# .github/FUNDING.yml
+# Activa el botón "Sponsor" en la página del repositorio público.
+# Docs: https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/displaying-a-sponsor-button-in-your-repository
+#
+# --- ACCIÓN REQUERIDA (solo el usuario puede hacerlo en GitHub) ---
+# 1. GitHub Sponsors: habilita tu perfil de Sponsors en https://github.com/sponsors
+#    (cuenta `olddogsoftllc`). Una vez aprobado, el botón Sponsor usarà esta entrada.
+# 2. PayPal: confirma tu enlace paypal.me y descomenta la línea `paypal:` con tu usuario.
+# 3. Ko-fi / Buy Me a Coffee: opcionales — descomenta y rellena si quieres esas vías.
+# 4. custom: mientras se publica el libro en Leanpub, apunta al blog/landing.
+#    Sustituye por la URL de Leanpub cuando el libro esté live.
+
+github: olddogsoftllc
+# paypal: 'paypal.me/olddogsoft'          # TODO: confirma tu PayPal.me
+# ko_fi: olddogsoft                        # TODO: opcional
+# buy_me_a_coffee: olddogsoft              # TODO: opcional
+custom:
+  - 'https://www.olddogsoft.com/blog'      # landing temporal -> sustituir por Leanpub

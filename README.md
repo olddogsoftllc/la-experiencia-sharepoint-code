@@ -141,3 +141,14 @@ Suite total: **40 pruebas** (16 unit sin red + 24 smoke en vivo); **40/40 valida
 ## 📄 Licencia
 
 MIT License (código). El contenido del libro es CC BY-NC-SA 4.0.
+
+## 💝 Apoya el proyecto
+
+Este código es gratuito y open source. Si te ayuda, puedes apoyar de varias maneras:
+
+- **GitHub Sponsors** — pulsa el botón **Sponsor** arriba (requiere que el autor tenga el perfil de Sponsors habilitado en `olddogsoftllc`).
+- **Comprar el libro** — *La Experiencia SharePoint* (4 volúmenes) en Leanpub (enlace próximamente; mientras tanto en [olddogsoft.com/blog](https://www.olddogsoft.com/blog)).
+- **PayPal / Ko-fi** — vías one-click configuradas vía `.github/FUNDING.yml` (ver ese archivo para activarlas).
+- **Compartir el repo** — una estrella ⭐ y compartir con tu equipo también ayudan.
+
+> El código siempre será gratis y MIT. El libro (contenido editorial) es de pago para sostener el proyecto. Tu apoyo financia más ejemplos, validación en vivo y mantenimiento frente a los cambios de Microsoft Graph.
