@@ -1,81 +1,143 @@
-:
+# La Experiencia SharePoint — Código de ejemplos
 
-# The SharePoint Experience - Code Examples
+Repositorio oficial de código del libro **"La Experiencia SharePoint: Desarrollo con Microsoft Graph"**.
 
-Official code repository for the book **"The SharePoint Experience: Development with Microsoft Graph"** (La Experiencia SharePoint: Desarrollo con Microsoft Graph).
+> Fuente única de verdad del código de ejemplos. El libro embebe el código inline en los capítulos como extractos didácticos; este repo contiene los archivos **completos, compilables y ejecutables**.
 
-## 📚 About
+## 📚 Lenguajes
 
-This repository contains practical code examples in 5 programming languages:
-
-- **C#** (.NET 6+)
-- **PowerShell** (5.1 and 7.x)
+- **C#** (.NET 8.0+)
+- **PowerShell** (7.4+)
 - **JavaScript/Node.js** (18+)
-- **Python** (3.9+)
+- **Python** (3.10+)
 - **Java** (17+)
 
-## 📁 Structure
+## 📁 Estructura
 
 ```
-├── chapter-02-auth/              # Authentication and security
-├── chapter-03-sites/             # Site management
-├── chapter-04-documents/         # File handling
-├── chapter-05-permissions/       # Permissions and sharing
-├── chapter-06-metadata/            # Metadata and content types
-├── chapter-07-automation/          # Webhooks and automation
-├── complete-workflow/            # End-to-end workflow project
-├── package.json                  # Node.js dependencies
-├── requirements.txt              # Python dependencies
-└── pom.xml                       # Java dependencies (Maven)
+├── common/                        # Módulo de autenticación compartido (DRY + DI)
+│   ├── SharePointGraphAuth/        #   C# (GraphAuthOptions + SharePointGraphClientFactory)
+│   ├── SharePointGraphAuth.Tests/  #   C# xUnit tests
+│   ├── laexperiencia_sharepoint/   #   Python (get_graph_client / get_access_token) + tests
+│   ├── graphAuth.js                #   JavaScript (getGraphClient / getAccessToken) + Jest tests
+│   ├── SharePointGraph.psm1        #   PowerShell (Connect-SharePointGraph) + Pester tests
+│   └── sharepoint-graph-auth/      #   Java (GraphServiceClientFactory) + JUnit tests
+├── chapter-02-auth/               # Autenticación (interactiva/delegada + certificado + cache)
+├── chapter-03-sites/              # Sitios y bibliotecas
+├── chapter-04-documents/          # Documentos
+├── chapter-05-permissions/        # Permisos y sharing
+├── chapter-06-metadata/           # Metadata y content types (Term Store)
+├── chapter-07-automation/         # Webhooks y delta queries
+├── chapter-14-spfx/               # 12 proyectos SharePoint Framework (SPFx 1.20, Node 18 LTS)
+├── chapter-17-teams/              # Apps de Teams: tab app standalone + bot que lee SharePoint via Graph
+├── la-experiencia-sharepoint.slnx  # Solución C# (dotnet)
+├── pom.xml                         # Reactor Java (Maven multi-module)
+├── package.json                    # Node.js (deps + Jest)
+├── requirements.txt                # Python (raíz)
+├── .env.example                    # Plantilla de variables de entorno
+└── smoke-tests.sh                  # Smoke tests en vivo contra el tenant
 ```
 
-## 🚀 Quick Start
+## 🔐 Variables de entorno
 
-### Required Environment Variables
+Copia `.env.example` a `.env` y rellena:
 
+```
+TENANT_ID=...
+CLIENT_ID=...
+CLIENT_SECRET=...
+SHAREPOINT_SITE_URL=https://TU-TENANT.sharepoint.com/sites/book-test
+SHAREPOINT_SITE_ID=...
+```
+
+> ⚠️ Nunca commitees `.env` con credenciales reales (ya está en `.gitignore`).
+
+## 🚀 Instalación y build
+
+**C# (.NET):**
 ```bash
-SP_TENANT_ID="your-tenant-id"
-SP_CLIENT_ID="your-client-id"
-SP_CLIENT_SECRET="your-client-secret"
-SP_SITE_ID="your-site-id"
-SP_DRIVE_ID="your-drive-id"
+dotnet build la-experiencia-sharepoint.slnx     # 0 errores
+dotnet test common/SharePointGraphAuth.Tests    # 5 tests unitarios
 ```
 
-### Installation by Language
+**Java (Maven):**
+```bash
+mvn clean compile                                 # reactor completo, 0 errores
+mvn -pl common/sharepoint-graph-auth test         # 2 tests JUnit
+```
 
-**JavaScript/Node.js:**
+**JavaScript (Node.js):**
 ```bash
 npm install
+npx jest                                          # 3 tests Jest
 ```
 
 **Python:**
 ```bash
 pip install -r requirements.txt
-```
-
-**Java:**
-```bash
-mvn clean install
+pip install -e common                              # módulo de auth compartido
+python -m pytest common/tests/                     # 4 tests pytest
 ```
 
 **PowerShell:**
 ```powershell
-Install-Module Microsoft.Graph -Scope CurrentUser
+Install-Module Microsoft.Graph.Authentication -Scope CurrentUser
+pwsh -NoProfile -Command "Invoke-Pester -Path ./common/SharePointGraph.Tests.ps1 -Output Detailed"  # 2 tests Pester
 ```
 
-**C#:**
+**SPFx (cap14) — requiere Node 18 LTS:**
 ```bash
-dotnet restore
+nvm use 18
+cd chapter-14-spfx/01-webpart-hello-graph   # cualquier proyecto
+npm install
+gulp build                                   # 0 warnings, 0 TS errors (los 11 proyectos)
+gulp bundle --ship && gulp package-solution --ship   # -> sharepoint/solution/*.sppkg
+```
+Los 11 proyectos SPFx de `chapter-14-spfx/` construyen verdes (0 warnings). Ver
+`chapter-14-spfx/README.md` para el índice de los 12 ejemplos y los permisos Graph
+que cada uno declara.
+
+**Teams (cap17):**
+```bash
+cd chapter-17-teams/02-bot-sharepoint
+npm install
+npm test          # 4 tests Jest (graphAuth, sin red)
+npm run build     # tsc, 0 errores
+```
+`01-tab-app-sharepoint` es un package de manifest + iconos (sin build; `bash package.sh` genera el .zip). `02-bot-sharepoint` es un bot Node (botbuilder + restify) que responde `sites` / `docs <site>` leyendo Graph. Ver los README de cada uno para el ciclo de vida completo (Entra ID, Azure Bot, ngrok, sideload).
+
+## ▶️ Ejecutar los ejemplos
+
+Cada capítulo tiene un `main`/`Main` de **solo lectura** que opera contra el sitio de pruebas (resuelto por path, por defecto `olddogsoft1.sharepoint.com/sites/book-test` — sobreescribible con `SHAREPOINT_HOSTNAME`/`SHAREPOINT_SITE_PATH`).
+
+```bash
+# C#
+dotnet run --project chapter-03-sites/csharp/Chapter03Sites.csproj
+# Python
+python chapter-03-sites/python/site_operations.py
+# JavaScript
+node chapter-03-sites/javascript/SiteOperations.js
+# PowerShell
+pwsh -NoProfile -File chapter-03-sites/powershell/SiteOperations.ps1
+# Java
+mvn -q install -DskipTests
+mvn -q -pl chapter-03-sites/java exec:java -Dexec.mainClass=com.sharepointexperience.chapter03.SiteOperations
 ```
 
-## 📖 Usage
+## 🧪 Tests automatizados
 
-Each chapter contains standalone examples that you can run directly. Check the comments in each file for specific instructions.
+```bash
+bash smoke-tests.sh        # 24 smoke tests en vivo contra el tenant (C#/Py/JS/PS/Java)
+```
 
-## 📄 License
+Suite total: **40 pruebas** (16 unit sin red + 24 smoke en vivo); **40/40 validadas en verde** con mínimo privilegio (`Sites.Selected`). Ver `PRUEBAS-AUTOMATIZADAS.md`.
 
-MIT License
+## 📖 Notas
 
----
+- La autenticación **app-only con client secret** (Microsoft Graph) es el patrón soportado para automatización no interactiva. Los ejemplos del cap. 2 usan auth **interactiva/delegada** (navegador) para enseñar los flujos.
+- El módulo `common/` centraliza la auth (DRY); los ejemplos reciben el cliente/token por **inyección de dependencias**.
+- `complete-workflow/` (proyecto integrador) es un stub pendiente de portar.
 
-**Note:** This repository contains code only. Complete documentation, guides, and detailed explanations are in the book.
+## 📄 Licencia
+
+MIT License (código). El contenido del libro es CC BY-NC-SA 4.0.
