@@ -1,14 +1,14 @@
-// src/graphAuth.ts — factory de Graph reutilizable (mismo patrón que chapter-02-auth common/)
-// App-only con client secret. Para producción usa certificado (ver chapter-02-auth).
+// src/graphAuth.ts — reusable Graph factory (same pattern as chapter-02-auth common/)
+// App-only with client secret. For production use a certificate (see chapter-02-auth).
 import { ClientSecretCredential } from '@azure/identity';
 import { Client } from '@microsoft/microsoft-graph-client';
-import 'isomorphic-fetch'; // polyfill fetch en Node (lo trae @azure/identity vía transitive)
+import 'isomorphic-fetch'; // fetch polyfill for Node (provided by @azure/identity transitively)
 
 let _client: Client | undefined;
 
 /**
- * Construye (lazy) un cliente de Graph en modo app-only.
- * Reusa el mismo patrón del módulo común del cap2: variables de entorno + credential.
+ * Lazily builds a Graph client in app-only mode.
+ * Reuses the same pattern as the chapter 2 common module: env vars + credential.
  */
 export function getGraphClient(): Client {
   if (_client) return _client;
@@ -19,11 +19,11 @@ export function getGraphClient(): Client {
 
   if (!tenantId || !clientId || !clientSecret) {
     throw new Error(
-      'Faltan GRAPH_TENANT_ID / GRAPH_CLIENT_ID / GRAPH_CLIENT_SECRET en el entorno. Copia .env.example a .env.'
+      'GRAPH_TENANT_ID / GRAPH_CLIENT_ID / GRAPH_CLIENT_SECRET are missing in the environment. Copy .env.example to .env.'
     );
   }
 
-  // TokenCredentialProvider que @microsoft/microsoft-graph-client acepta
+  // TokenCredentialProvider accepted by @microsoft/microsoft-graph-client
   const credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
 
   _client = Client.initWithMiddleware({
@@ -38,7 +38,7 @@ export function getGraphClient(): Client {
   return _client;
 }
 
-// Tipos mínimos para tipar las respuestas (evita `any` — coherente con cap14 GraphService)
+// Minimal types to type the responses (avoids `any` — consistent with chapter 14 GraphService)
 export interface IGraphSite {
   id: string;
   displayName: string;

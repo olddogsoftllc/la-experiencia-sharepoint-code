@@ -1,7 +1,8 @@
-"""Tests del módulo de auth compartido (Python).
+"""Tests for the shared auth module (Python).
 
-No tocan la red: ClientSecretCredential es lazy (no obtiene token hasta la primera
-petición a Graph). Se prueba validación de env y construcción del cliente.
+They do not touch the network: ClientSecretCredential is lazy (it does not fetch a
+token until the first request to Graph). Env validation and client construction
+are exercised.
 """
 import os
 import pytest
@@ -48,12 +49,12 @@ def test_get_graph_client_returns_client_with_env(monkeypatch):
     assert type(client).__name__ == "GraphServiceClient"
 
 
-# --- Certificado ---
+# --- Certificate ---
 
 def _set_cert_env(monkeypatch, tmp_path):
-    """Genera un certificado self-signed real (vía cryptography) y lo escribe como PEM.
-    ``ClientCertificateCredential`` parsea el PEM al construir (no es lazy para cert),
-    así que necesitamos un PEM criptográficamente válido; el token sí es lazy."""
+    """Generates a real self-signed certificate (via cryptography) and writes it as PEM.
+    ``ClientCertificateCredential`` parses the PEM on construction (it is not lazy for
+    the cert), so we need a cryptographically valid PEM; the token itself is lazy."""
     from cryptography import x509
     from cryptography.hazmat.primitives import hashes, serialization
     from cryptography.hazmat.primitives.asymmetric import rsa
@@ -90,14 +91,14 @@ def _set_cert_env(monkeypatch, tmp_path):
 
 def test_get_graph_client_auto_detects_cert(monkeypatch, tmp_path):
     _set_cert_env(monkeypatch, tmp_path)
-    # Sin CLIENT_SECRET, con CERTIFICATE_PATH -> debe usar cert (no lanzar por falta de secret).
+    # No CLIENT_SECRET, with CERTIFICATE_PATH -> must use cert (not throw for missing secret).
     client = get_graph_client()
     assert client is not None
     assert type(client).__name__ == "GraphServiceClient"
 
 
 def test_get_graph_client_forces_secret_when_cert_env_present(monkeypatch):
-    # CERTIFICATE_PATH presente pero use_certificate=False -> requiere CLIENT_SECRET.
+    # CERTIFICATE_PATH present but use_certificate=False -> requires CLIENT_SECRET.
     monkeypatch.setenv("TENANT_ID", "t")
     monkeypatch.setenv("CLIENT_ID", "c")
     monkeypatch.setenv("CERTIFICATE_PATH", "/some/cert.pfx")

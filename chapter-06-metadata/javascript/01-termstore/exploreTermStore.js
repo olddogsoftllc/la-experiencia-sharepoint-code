@@ -1,6 +1,6 @@
 // exploreTermStore.js
-// Ejemplo: Explorar el Term Store con Microsoft Graph JavaScript SDK.
-// El cliente de Graph se inyecta por constructor (DI) desde el módulo común.
+// Example: Explore the Term Store with Microsoft Graph JavaScript SDK.
+// The Graph client is injected via constructor (DI) from the common module.
 
 const { getGraphClient } = require('la-experiencia-sharepoint-code/graphAuth');
 
@@ -16,7 +16,7 @@ class TermStoreExplorer {
         console.log();
 
         try {
-            // Obtener Term Store
+            // Get Term Store
             const termStore = await this.graphClient
                 .api('/sites/root/termStore')
                 .get();
@@ -27,7 +27,7 @@ class TermStoreExplorer {
             console.log(`   Languages: ${termStore.languageTags?.join(', ') || 'N/A'}`);
             console.log();
 
-            // Listar grupos
+            // List groups
             const groups = await this.graphClient
                 .api('/sites/root/termStore/groups')
                 .get();
@@ -37,9 +37,9 @@ class TermStoreExplorer {
             for (const group of groups.value) {
                 console.log(`   📁 ${group.displayName}`);
                 console.log(`      ID: ${group.id}`);
-                console.log(`      Descripción: ${group.description || 'N/A'}`);
+                console.log(`      Description: ${group.description || 'N/A'}`);
 
-                // Obtener conjuntos de términos
+                // Get term sets
                 const sets = await this.graphClient
                     .api(`/sites/root/termStore/groups/${group.id}/sets`)
                     .get();
@@ -57,7 +57,7 @@ class TermStoreExplorer {
     }
 }
 
-// Ejemplo de uso: cliente de Graph vía módulo común (client secret, app-only).
+// Example usage: Graph client via common module (client secret, app-only).
 async function main() {
     const graphClient = await getGraphClient();
     const explorer = new TermStoreExplorer(graphClient);
@@ -66,7 +66,7 @@ async function main() {
 
 module.exports = { TermStoreExplorer };
 
-// Si se ejecuta directamente
+// If run directly
 if (require.main === module) {
     main().catch(console.error);
 }

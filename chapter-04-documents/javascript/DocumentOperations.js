@@ -19,10 +19,10 @@ const { getAccessToken } = require('la-experiencia-sharepoint-code/graphAuth');
 const GRAPH_BASE = 'https://graph.microsoft.com/v1.0';
 
 /**
- * SharePoint Document Operations class. El access token se inyecta por constructor (DI).
+ * SharePoint Document Operations class. The access token is injected via constructor (DI).
  */
 class DocumentOperations {
-    /** @param {string} accessToken Bearer token for Microsoft Graph (inyectado). */
+    /** @param {string} accessToken Bearer token for Microsoft Graph (injected). */
     constructor(accessToken) {
         if (!accessToken) throw new Error('Se requiere un access token para DocumentOperations.');
         this.accessToken = accessToken;
@@ -36,7 +36,7 @@ class DocumentOperations {
         };
     }
 
-    /** Lists the document libraries (drives) of a site. Solo lectura. */
+    /** Lists the document libraries (drives) of a site. Read-only. */
     async listDrives(siteId) {
         try {
             console.log(`Listing document libraries of site: ${siteId}`);
@@ -239,7 +239,7 @@ async function main() {
         const hostname = process.env.SHAREPOINT_HOSTNAME || 'olddogsoft1.sharepoint.com';
         const sitePath = process.env.SHAREPOINT_SITE_PATH || 'book-test';
 
-        // Resolver el sitio por path para obtener su ID.
+        // Resolve the site by path to get its ID.
         const siteUrl = `${GRAPH_BASE}/sites/${encodeURIComponent(hostname)}:/sites/${encodeURIComponent(sitePath)}`;
         const siteResp = await axios.get(siteUrl, { headers: await docOps.getHeaders() });
 

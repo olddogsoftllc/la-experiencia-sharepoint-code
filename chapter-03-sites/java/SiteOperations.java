@@ -144,7 +144,7 @@ public class SiteOperations {
         }
     }
 
-    /** Devuelve el valor string de una clave de un JsonObject, o default si es null/ausente. */
+    /** Returns the string value of a key from a JsonObject, or default if null/absent. */
     private String safeStr(JsonObject obj, String key, String defaultValue) {
         if (obj.get(key) != null && !obj.get(key).isJsonNull()) {
             return obj.get(key).getAsString();

@@ -1,9 +1,9 @@
 /**
  * deltaQueries.js
- * Ejemplo de Delta Queries con Microsoft Graph para sincronizacion incremental.
- * Referencia: Capitulo 7 - Automatizacion y Flujos
+ * Example of Delta Queries with Microsoft Graph for incremental sync.
+ * Reference: Chapter 7 - Automation and Flows
  *
- * Uso:
+ * Usage:
  *   node deltaQueries.js
  */
 
@@ -75,13 +75,13 @@ class DeltaQueryManager {
 
         items.forEach(item => {
             if (item.deleted) {
-                console.log(`   🗑️  Eliminado: ${item.name || 'unknown'}`);
+                console.log(`   🗑️  Deleted: ${item.name || 'unknown'}`);
             } else {
                 console.log(`   ✏️  Modificado: ${item.name || 'unknown'}`);
             }
         });
 
-        // Actualizar token delta
+        // Update delta token
         const newDeltaLink = response.data['@odata.deltaLink'] || '';
         const newToken = this._extractDeltaToken(newDeltaLink);
         if (newToken) {
@@ -129,7 +129,7 @@ class DeltaQueryManager {
     }
 
     /**
-     * Muestra los tokens delta almacenados.
+     * Shows the stored delta tokens.
      */
     showStoredTokens() {
         console.log('\n📋 Tokens Delta Almacenados:');
@@ -169,7 +169,7 @@ async function main() {
         await manager.getDeltaChanges(firstDrive.id);
 
         manager.showStoredTokens();
-        console.log('\n✅ Ejemplo completado');
+        console.log('\n✅ Example completed');
 
     } catch (error) {
         console.error(`❌ Error: ${error.message}`);

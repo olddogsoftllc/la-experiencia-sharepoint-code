@@ -230,9 +230,9 @@ async function main() {
         const siteResp = await axios.get(siteUrl, { headers: await permOps.getHeaders() });
         const siteId = siteResp.data.id;
 
-        // Listar drives del sitio y tomar el primero; listar permisos del item root.
-        // (Listar /sites/{id}/permissions requiere admin; los permisos de item del drive
-        //  están cubiertos por el grant Sites.Selected.)
+        // List the drives of the site and take the first one; list permissions of the root item.
+        // (Listing /sites/{id}/permissions requires admin; permissions of a drive item
+        //  are covered by the Sites.Selected grant.)
         const drivesResp = await axios.get(`${GRAPH_BASE}/sites/${siteId}/drives`, { headers: await permOps.getHeaders() });
         const firstDrive = drivesResp.data.value[0];
         await permOps.listPermissions(siteId, firstDrive.id, 'root');

@@ -1,17 +1,17 @@
-# Iconos de la app de Teams
+# Teams app icons
 
-Teams requiere **dos PNG** en la raíz del .zip. No se pueden omitir; la subida falla sin ellos.
+Teams requires **two PNGs** at the root of the .zip. They cannot be omitted; the upload fails without them.
 
-## Especificaciones
+## Specifications
 
-| Archivo | Tamaño | Formato |
+| File | Size | Format |
 |---|---|---|
-| `color.png` | 192×192 px | Color, PNG, sin transparencia fuera del icono |
-| `outline.png` | 32×32 px | Monocromo (blanco sobre transparente), PNG con transparencia |
+| `color.png` | 192×192 px | Color, PNG, no transparency outside the icon |
+| `outline.png` | 32×32 px | Monochrome (white on transparent), PNG with transparency |
 
-## Cómo generarlos rápido
+## How to generate them quickly
 
-Con ImageMagick (o cualquier editor):
+With ImageMagick (or any editor):
 
 ```bash
 # color.png — rellena de color corporativo con texto
@@ -23,6 +23,6 @@ convert -size 32x32 xc:none -fill white -gravity center \
   -pointsize 16 -annotate +0+0 'SP' outline.png
 ```
 
-O usa el [Microsoft Teams App Icon Generator](https://developer.microsoft.com/microsoft-teams/app-icon-tool) oficial.
+Or use the official [Microsoft Teams App Icon Generator](https://developer.microsoft.com/microsoft-teams/app-icon-tool).
 
-> **Honesto**: los iconos son un paso que la gente subestima. El `outline.png` **debe** ser monocromo transparente (blanco sobre transparente), no un color.png reducido — Teams lo muestra en temas oscuros y rompe si tiene fondo opaco.
+> **Honest note**: icons are a step people underestimate. The `outline.png` **must** be a transparent monochrome (white on transparent), not a scaled-down color.png — Teams displays it in dark themes and breaks if it has an opaque background.

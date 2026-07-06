@@ -2,10 +2,10 @@
 
 The capstone Web Part: reads a site's permission entries via Microsoft Graph,
 classifies errors, and emits structured telemetry — wiring together Graph,
-DI, error handling, and the telemetry stub from cap14.
+DI, error handling, and the telemetry stub from chapter 14.
 
-Connects to cap5 (Permissions) and demonstrates the cap14 "Manejo de errores y
-telemetría" section end-to-end.
+Connects to chapter 5 (Permissions) and demonstrates the chapter 14 "Error
+Handling and Telemetry" section end-to-end.
 
 ## Structure
 
@@ -38,7 +38,7 @@ gulp package-solution --ship     # sharepoint/solution/permissions-panel.sppkg
 ## Why this is the capstone
 
 `/sites/{id}/permissions` is an **admin operation**. Under the book's
-Sites.Selected / "mínimo privilegio" model it returns **403** — and the Web Part
+Sites.Selected / "least privilege" model it returns **403** — and the Web Part
 surfaces that explicitly instead of silently failing. It also shows:
 - `GraphService` receiving both the Graph client and a `TelemetryClient` (DI).
 - `trackSuccess` / `trackError` called on every call.

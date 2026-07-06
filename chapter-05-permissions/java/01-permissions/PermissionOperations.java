@@ -1,9 +1,9 @@
 // PermissionOperations.java
 // Chapter 05: Permissions
 //
-// Ejemplo de operaciones de permisos y sharing en SharePoint con Microsoft Graph
-// SDK para Java (v6). El GraphServiceClient se inyecta por constructor (DI) desde
-// el módulo común: demostración de DRY + inyección de dependencias.
+// Example of permission and sharing operations in SharePoint with Microsoft Graph
+// SDK for Java (v6). The GraphServiceClient is injected via constructor (DI) from
+// the common module: demonstration of DRY + dependency injection.
 
 package com.sharepointexperience.chapter05;
 
@@ -21,15 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Ejemplo que demuestra gestión de permisos y enlaces de uso compartido en
- * SharePoint: creación de enlaces anónimos/organización, concesión de acceso a
- * usuarios, listado y borrado de permisos a nivel de item y de sitio.
+ * Example demonstrating management of permissions and sharing links in SharePoint:
+ * creation of anonymous/organization links, granting access to users, listing and
+ * deleting permissions at the item and site level.
  */
 public class PermissionOperations {
 
     private final GraphServiceClient graphClient;
 
-    /** Crea una instancia con un cliente de Graph inyectado (DI). */
+    /** Creates an instance with an injected Graph client (DI). */
     public PermissionOperations(GraphServiceClient graphClient) {
         if (graphClient == null) {
             throw new IllegalArgumentException("graphClient is required");
@@ -38,12 +38,11 @@ public class PermissionOperations {
     }
 
     /**
-     * Crea un enlace de uso compartido anónimo (cualquiera con el enlace) para un
-     * archivo o carpeta.
+     * Creates an anonymous sharing link (anyone with the link) for a file or folder.
      */
     public Permission createAnonymousLink(String driveId, String itemId, String linkType) {
         String type = linkType == null || linkType.isBlank() ? "view" : linkType;
-        System.out.println("Creando enlace anónimo (" + type + ") para el item: " + itemId);
+        System.out.println("Creating anonymous link (" + type + ") for item: " + itemId);
 
         CreateLinkPostRequestBody body = new CreateLinkPostRequestBody();
         body.setType(type);
@@ -59,11 +58,11 @@ public class PermissionOperations {
     }
 
     /**
-     * Crea un enlace de uso compartido para toda la organización.
+     * Creates a sharing link for the whole organization.
      */
     public Permission createOrganizationLink(String driveId, String itemId, String linkType) {
         String type = linkType == null || linkType.isBlank() ? "view" : linkType;
-        System.out.println("Creando enlace de organización (" + type + ") para el item: " + itemId);
+        System.out.println("Creating organization link (" + type + ") for item: " + itemId);
 
         CreateLinkPostRequestBody body = new CreateLinkPostRequestBody();
         body.setType(type);
@@ -79,7 +78,7 @@ public class PermissionOperations {
     }
 
     /**
-     * Concede acceso a un usuario concreto sobre un item.
+     * Grants access to a specific user on an item.
      */
     public Permission grantAccessToUser(String driveId, String itemId, String userEmail, String role) {
         String effectiveRole = role == null || role.isBlank() ? "write" : role;
@@ -118,7 +117,7 @@ public class PermissionOperations {
     }
 
     /**
-     * Lista los permisos de un item (drive).
+     * Lists the permissions of an item (drive).
      */
     public void listPermissions(String driveId, String itemId) {
         System.out.println("Listando permisos del item: " + itemId);
@@ -141,7 +140,7 @@ public class PermissionOperations {
     }
 
     /**
-     * Lista los permisos a nivel de sitio (solo lectura).
+     * Lists site-level permissions (read-only).
      */
     public void listSitePermissions(String siteId) {
         System.out.println("Listando permisos del sitio: " + siteId);
@@ -163,7 +162,7 @@ public class PermissionOperations {
     }
 
     /**
-     * Elimina un permiso concreto de un item.
+     * Deletes a specific permission from an item.
      */
     public void deletePermission(String driveId, String itemId, String permissionId) {
         System.out.println("Eliminando permiso: " + permissionId);
@@ -175,7 +174,7 @@ public class PermissionOperations {
         System.out.println("Permiso eliminado correctamente");
     }
 
-    // ============== Auxiliares ==============
+    // ============== Helpers ==============
 
     private void printLink(Permission permission) {
         if (permission == null) {
@@ -211,13 +210,13 @@ public class PermissionOperations {
     }
 
     /**
-     * Entry point: construye el cliente con el módulo común y ejecuta una demo de
-     * solo lectura listando los permisos del sitio de pruebas book-test (resuelto
-     * por path, sobreescribible con SHAREPOINT_HOSTNAME / SHAREPOINT_SITE_PATH).
+     * Entry point: builds the client with the common module and runs a read-only
+     * demo listing the permissions of the book-test test site (resolved by path,
+     * overridable with SHAREPOINT_HOSTNAME / SHAREPOINT_SITE_PATH).
      */
     public static void main(String[] args) {
         try {
-            // create() auto-detecta certificado (si CERTIFICATE_PATH está presente) o client secret.
+            // create() auto-detects certificate (if CERTIFICATE_PATH is present) or client secret.
             GraphServiceClient client = GraphServiceClientFactory.create();
             PermissionOperations permOps = new PermissionOperations(client);
 
@@ -227,11 +226,11 @@ public class PermissionOperations {
             // Resolver el sitio por path para obtener su ID.
             Site site = client.sites().bySiteId(hostname + ":/sites/" + sitePath).get();
             String siteId = site.getId();
-            System.out.println("Sitio: " + site.getDisplayName() + " (" + siteId + ")\n");
+            System.out.println("Site: " + site.getDisplayName() + " (" + siteId + ")\n");
 
-            // Listar los drives del sitio y tomar el primero; listar permisos del item root.
-            // (Listar /sites/{id}/permissions requiere permisos de admin fuera de Sites.Selected;
-            //  los permisos de un item del drive sí están cubiertos por el grant Sites.Selected.)
+            // List the drives of the site and take the first one; list permissions of the root item.
+            // (Listing /sites/{id}/permissions requires admin permissions outside Sites.Selected;
+            //  permissions of a drive item are covered by the Sites.Selected grant.)
             var drives = client.sites().bySiteId(siteId).drives().get();
             var firstDrive = (drives != null && drives.getValue() != null && !drives.getValue().isEmpty())
                     ? drives.getValue().get(0) : null;

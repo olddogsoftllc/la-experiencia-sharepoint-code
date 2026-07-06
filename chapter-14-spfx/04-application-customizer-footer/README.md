@@ -3,7 +3,7 @@
 An **Application Customizer** that injects a global footer bar into the
 `Bottom` placeholder of every modern page where the extension is active.
 
-Covers the book's cap14 "Tipos de Extensiones" (Application Customizer) and
+Covers the book's chapter 14 "Types of Extensions" (Application Customizer) and
 shows `BaseApplicationCustomizer`, `placeholderProvider`, `PlaceholderName.Bottom`,
 and `tryCreateContent` — including reacting to `changedEvent` when placeholders
 become available after `onInit`.

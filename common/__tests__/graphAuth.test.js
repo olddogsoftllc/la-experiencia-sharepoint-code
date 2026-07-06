@@ -1,7 +1,7 @@
 /**
- * Tests del módulo de auth compartido (JavaScript).
- * No tocan la red: el token se obtiene (con red) solo al hacer la primera petición a Graph.
- * El modo certificado genera un PEM self-signed con openssl en beforeAll (sin deps extra).
+ * Tests for the shared auth module (JavaScript).
+ * They do not touch the network: the token is fetched (with network) only when making the first request to Graph.
+ * Certificate mode generates a self-signed PEM with openssl in beforeAll (no extra deps).
  */
 const fs = require('fs');
 const os = require('os');
@@ -12,11 +12,11 @@ const { getGraphClient, getAccessToken, buildCredential, requireEnv } = require(
 const ENV_KEYS = ['TENANT_ID', 'CLIENT_ID', 'CLIENT_SECRET',
                   'CERTIFICATE_PATH', 'CERTIFICATE_PASSWORD'];
 
-// Genera un PEM self-signed válido (clave privada RSA + cert X.509) con openssl al cargar
-// el módulo (síncrono, antes de evaluar los describe/it.skip). ClientCertificateCredential
-// parsea el PEM al construir (no es lazy para el cert), así que necesitamos un PEM
-// criptográficamente válido; el token sí es lazy. Si openssl no está disponible, los tests
-// de cert se skiparán (certPem === null).
+// Generates a valid self-signed PEM (RSA private key + X.509 cert) with openssl when
+// loading the module (synchronous, before evaluating describe/it.skip).
+// ClientCertificateCredential parses the PEM on construction (it is not lazy for the
+// cert), so we need a cryptographically valid PEM; the token itself is lazy. If openssl
+// is not available, the cert tests are skipped (certPem === null).
 let tmpDir = null;
 let certPem = null;
 try {
@@ -64,7 +64,7 @@ describe('getGraphClient', () => {
     });
 });
 
-// --- Certificado ---
+// --- Certificate ---
 
 describe('certificate mode', () => {
     const maybeIt = certPem ? it : it.skip;
@@ -73,7 +73,7 @@ describe('certificate mode', () => {
         process.env.TENANT_ID = 'fake-tenant';
         process.env.CLIENT_ID = 'fake-client';
         process.env.CERTIFICATE_PATH = certPem;
-        // Sin CLIENT_SECRET: debe entrar en modo cert y construir sin lanzar por falta de secret.
+        // No CLIENT_SECRET: must enter cert mode and build without throwing for missing secret.
         const client = await getGraphClient();
         expect(client).toBeTruthy();
     });
@@ -92,8 +92,8 @@ describe('certificate mode', () => {
     });
 
     maybeIt('getAccessToken builds credential in cert mode without network call', async () => {
-        // getAccessToken llama a getToken (con red), pero buildCredential por sí no toca red.
-        // Verificamos que la construcción del credential en modo cert no lanza por falta de secret.
+        // getAccessToken calls getToken (with network), but buildCredential itself does not touch the network.
+        // We verify that building the credential in cert mode does not throw for missing secret.
         process.env.TENANT_ID = 'fake-tenant';
         process.env.CLIENT_ID = 'fake-client';
         process.env.CERTIFICATE_PATH = certPem;

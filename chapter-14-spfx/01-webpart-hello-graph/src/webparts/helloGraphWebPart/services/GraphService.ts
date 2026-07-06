@@ -19,8 +19,8 @@ interface ISiteSearchResponse {
  * Injected into the React component so the component never touches
  * `this.context` and stays unit-testable with a fake client.
  *
- * Mirrors the GraphService pattern shown in the book (cap14,
- * "Patrón de Acceso a Graph en SPFx").
+ * Mirrors the GraphService pattern shown in the book (chapter 14,
+ * "Graph access pattern in SPFx").
  */
 export class GraphService {
   constructor(private readonly client: MSGraphClientV3) {}

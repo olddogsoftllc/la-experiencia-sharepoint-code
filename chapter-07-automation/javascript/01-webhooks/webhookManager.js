@@ -1,6 +1,6 @@
 // webhookManager.js
-// Ejemplo: Gestionar suscripciones webhook con Microsoft Graph.
-// El cliente de Graph se inyecta por constructor (DI) desde el módulo común.
+// Example: Manage webhook subscriptions with Microsoft Graph.
+// The Graph client is injected via constructor (DI) from the common module.
 
 const { getGraphClient } = require('la-experiencia-sharepoint-code/graphAuth');
 
@@ -10,10 +10,10 @@ class WebhookManager {
         this.notificationUrl = notificationUrl;
     }
 
-    /** Lista las suscripciones existentes (solo lectura). */
+    /** List existing subscriptions (read-only). */
     async listSubscriptions() {
         try {
-            console.log('📋 Listando suscripciones webhook...');
+            console.log('📋 Listing webhook subscriptions...');
             const response = await this.graphClient.api('/subscriptions').get();
             const subs = response.value || [];
             console.log(`   Suscripciones encontradas: ${subs.length}`);
@@ -24,7 +24,7 @@ class WebhookManager {
     }
 
     async createDriveSubscription(driveId) {
-        console.log(`🔔 Creando suscripción para Drive: ${driveId}`);
+        console.log(`🔔 Creating subscription for Drive: ${driveId}`);
 
         const subscription = {
             resource: `/drives/${driveId}/root`,
@@ -38,7 +38,7 @@ class WebhookManager {
             .api('/subscriptions')
             .post(subscription);
 
-        console.log(`   ✅ Suscripción: ${response.id}`);
+        console.log(`   ✅ Subscription: ${response.id}`);
         return response;
     }
 
@@ -56,7 +56,7 @@ class WebhookManager {
         await this.graphClient
             .api(`/subscriptions/${subscriptionId}`)
             .delete();
-        console.log(`🗑️ Suscripción ${subscriptionId} eliminada`);
+        console.log(`🗑️ Subscription ${subscriptionId} deleted`);
     }
 }
 

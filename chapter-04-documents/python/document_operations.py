@@ -5,8 +5,8 @@ Chapter 04: Documents
 SharePoint Document Operations Example
 Demonstrates upload, download, and search operations for documents.
 
-Usa el módulo de auth compartido (common/laexperiencia_sharepoint): el access token
-se inyecta por constructor (DI), no se obtiene dentro de la clase.
+Uses the shared auth module (common/laexperiencia_sharepoint): the access token is
+injected via constructor (DI), not obtained inside the class.
 """
 
 import os
@@ -34,7 +34,7 @@ class DocumentOperations:
         }
 
     def list_drives(self, site_id: str) -> List[Dict]:
-        """Lists the document libraries (drives) of a site. Solo lectura."""
+        """Lists the document libraries (drives) of a site. Read-only."""
         try:
             print(f"Listing document libraries of site: {site_id}")
             url = f"{GRAPH_BASE}/sites/{site_id}/drives"
@@ -291,7 +291,7 @@ class DocumentOperations:
 
 
 def main():
-    """Construye el token con el módulo común y lista las bibliotecas del sitio book-test."""
+    """Builds the token with the common module and lists the libraries of the book-test site."""
     try:
         print("=== SharePoint Document Operations Example ===\n")
         token = get_access_token()
@@ -300,7 +300,7 @@ def main():
         hostname = os.environ.get("SHAREPOINT_HOSTNAME", "olddogsoft1.sharepoint.com")
         site_path = os.environ.get("SHAREPOINT_SITE_PATH", "book-test")
 
-        # Resolver el sitio por path para obtener su ID (el path form no sirve para /drives).
+        # Resolve the site by path to get its ID (the path form does not work for /drives).
         site_url = (
             f"{GRAPH_BASE}/sites/"
             f"{requests.utils.quote(hostname, safe='')}:/sites/"

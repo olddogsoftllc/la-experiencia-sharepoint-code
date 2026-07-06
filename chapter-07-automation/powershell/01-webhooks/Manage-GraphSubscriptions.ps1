@@ -1,5 +1,5 @@
 # Manage-GraphSubscriptions.ps1
-# Ejemplo: Gestionar suscripciones webhook de Microsoft Graph
+# Example: Manage webhook subscriptions for Microsoft Graph
 
 function New-DriveSubscription {
     param(
@@ -10,7 +10,7 @@ function New-DriveSubscription {
         [string]$NotificationUrl
     )
 
-    Write-Host "🔔 Creando suscripción..." -ForegroundColor Cyan
+    Write-Host "🔔 Creating subscription..." -ForegroundColor Cyan
 
     $subscription = @{
         resource = "/drives/$DriveId/root"
@@ -25,7 +25,7 @@ function New-DriveSubscription {
             -Uri "https://graph.microsoft.com/v1.0/subscriptions" `
             -Body $subscription
 
-        Write-Host "   ✅ Creada: $($response.id)" -ForegroundColor Green
+        Write-Host "   ✅ Created: $($response.id)" -ForegroundColor Green
         return $response
     }
     catch {
@@ -34,14 +34,14 @@ function New-DriveSubscription {
 }
 
 function Get-GraphSubscriptions {
-    Write-Host "📋 Suscripciones activas:" -ForegroundColor Cyan
+    Write-Host "📋 Active subscriptions:" -ForegroundColor Cyan
 
     $subs = Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/v1.0/subscriptions"
 
     foreach ($sub in $subs.value) {
         Write-Host "`n🆔 $($sub.id)" -ForegroundColor Yellow
-        Write-Host "   Recurso: $($sub.resource)"
-        Write-Host "   Expira: $($sub.expirationDateTime)"
+        Write-Host "   Resource: $($sub.resource)"
+        Write-Host "   Expires: $($sub.expirationDateTime)"
     }
 }
 
@@ -51,7 +51,7 @@ function Remove-GraphSubscription {
     Invoke-MgGraphRequest -Method DELETE `
         -Uri "https://graph.microsoft.com/v1.0/subscriptions/$SubscriptionId"
 
-    Write-Host "🗑️ Suscripción eliminada" -ForegroundColor Green
+    Write-Host "🗑️ Subscription deleted" -ForegroundColor Green
 }
 
 Export-ModuleMember -Function New-DriveSubscription, Get-GraphSubscriptions, Remove-GraphSubscription

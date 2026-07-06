@@ -5,10 +5,10 @@ import java.util.*;
 
 /**
  * DeltaQueryManager.java
- * Ejemplo de Delta Queries con Microsoft Graph para sincronizacion incremental.
- * Referencia: Capitulo 7 - Automatizacion y Flujos
+ * Example of Delta Queries with Microsoft Graph for incremental synchronization.
+ * Reference: Chapter 7 - Automation and Flows
  *
- * Requiere: java.net.http.HttpClient, org.json (o Gson)
+ * Requires: java.net.http.HttpClient, org.json (or Gson)
  */
 public class DeltaQueryManager {
 
@@ -24,7 +24,7 @@ public class DeltaQueryManager {
     }
 
     /**
-     * Realiza consulta delta inicial y almacena token.
+     * Performs an initial delta query and stores the token.
      */
     public List<Map<String, Object>> getInitialDelta(String driveId, String folderId) throws Exception {
         if (folderId == null) folderId = "root";
@@ -50,7 +50,7 @@ public class DeltaQueryManager {
     }
 
     /**
-     * Sincroniza cambios usando token delta almacenado.
+     * Synchronizes changes using the stored delta token.
      */
     public List<Map<String, Object>> getDeltaChanges(String driveId, String folderId) throws Exception {
         if (folderId == null) folderId = "root";
@@ -91,7 +91,7 @@ public class DeltaQueryManager {
     }
 
     /**
-     * Consulta delta para items de una lista de SharePoint.
+     * Delta query for items in a SharePoint list.
      */
     public List<Map<String, Object>> getListDelta(String siteId, String listId) throws Exception {
         System.out.println("🔄 Consulta delta para lista: " + listId);
@@ -112,7 +112,7 @@ public class DeltaQueryManager {
     }
 
     /**
-     * Muestra los tokens delta almacenados.
+     * Shows the stored delta tokens.
      */
     public void showStoredTokens() {
         System.out.println("\n📋 Tokens Delta Almacenados:");
@@ -122,11 +122,11 @@ public class DeltaQueryManager {
         }
     }
 
-    // ============== Metodos Auxiliares ==============
+    // ============== Helper Methods ==============
 
     private Map<String, Object> executeGet(String url) throws Exception {
-        // En un ejemplo real, usarias java.net.http.HttpClient
-        // Este stub demuestra la estructura
+        // In a real example, you would use java.net.http.HttpClient
+        // This stub demonstrates the structure
         System.out.println("   GET: " + url);
         return new HashMap<>();
     }

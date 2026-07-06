@@ -3,7 +3,7 @@
 A React Web Part that runs in **both SharePoint and Microsoft Teams** from a
 single SPFx bundle, detecting the host and theme at runtime.
 
-Covers the book's cap14 "Integración SPFx con Teams".
+Covers the book's chapter 14 "SPFx Integration with Teams".
 
 ## What it shows
 

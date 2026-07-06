@@ -4,7 +4,7 @@ An **SPFx Library** deployed to the App Catalog that other solutions consume as
 a dependency. Loads **once** per page regardless of how many Web Parts use it,
 so shared code counts once toward the bundle size.
 
-Covers the book's cap14 "SPFx Library: código compartido entre soluciones".
+Covers the book's chapter 14 "SPFx Library: shared code across solutions".
 
 ## Public surface (`src/index.ts`)
 

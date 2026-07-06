@@ -5,8 +5,8 @@ Chapter 05: Permissions
 SharePoint Permission Operations Example
 Demonstrates managing sharing links and permissions.
 
-Usa el módulo de auth compartido (common/laexperiencia_sharepoint): el access token
-se inyecta por constructor (DI), no se obtiene dentro de la clase.
+Uses the shared auth module (common/laexperiencia_sharepoint): the access token
+is injected via the constructor (DI), not obtained inside the class.
 """
 
 import os
@@ -294,7 +294,7 @@ class PermissionOperations:
 
 
 def main():
-    """Construye el token con el módulo común y lista los permisos del sitio book-test."""
+    """Builds the token with the common module and lists the permissions of the book-test site."""
     try:
         print("=== SharePoint Permission Operations Example ===\n")
         token = get_access_token()
@@ -313,9 +313,9 @@ def main():
         site.raise_for_status()
         site_id = site.json()["id"]
 
-        # Listar los drives del sitio y tomar el primero; listar permisos del item root.
-        # (Listar /sites/{id}/permissions requiere permisos de admin fuera de Sites.Selected;
-        #  los permisos de un item del drive sí están cubiertos por el grant Sites.Selected.)
+        # List the drives of the site and take the first one; list permissions of the root item.
+        # (Listing /sites/{id}/permissions requires admin permissions outside Sites.Selected;
+        #  permissions of a drive item are covered by the Sites.Selected grant.)
         drives = requests.get(f"{GRAPH_BASE}/sites/{site_id}/drives", headers=perm_ops._get_headers())
         drives.raise_for_status()
         first_drive = drives.json()["value"][0]

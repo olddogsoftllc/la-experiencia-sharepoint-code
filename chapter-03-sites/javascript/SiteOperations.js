@@ -5,8 +5,8 @@
  * SharePoint Site Operations Example
  * Demonstrates listing, creating, and retrieving SharePoint sites.
  *
- * Usa el módulo de auth compartido (common/graphAuth): el access token se inyecta
- * por constructor (DI), no se obtiene dentro de la clase.
+ * Uses the shared auth module (common/graphAuth): the access token is injected
+ * via constructor (DI), not obtained inside the class.
  */
 
 const axios = require('axios');
@@ -15,7 +15,7 @@ const { getAccessToken } = require('la-experiencia-sharepoint-code/graphAuth');
 const GRAPH_BASE = 'https://graph.microsoft.com/v1.0';
 
 class SiteOperations {
-    /** @param {string} accessToken Bearer token for Microsoft Graph (inyectado). */
+    /** @param {string} accessToken Bearer token for Microsoft Graph (injected). */
     constructor(accessToken) {
         if (!accessToken) throw new Error('Se requiere un access token para SiteOperations.');
         this.accessToken = accessToken;
@@ -57,7 +57,7 @@ class SiteOperations {
         try {
             console.log(`Fetching site: ${hostname}/sites/${sitePath}`);
             const headers = await this.getHeaders();
-            // Formato Graph path-based: /sites/{hostname}:/sites/{path}
+            // Graph path-based format: /sites/{hostname}:/sites/{path}
             const url = `${GRAPH_BASE}/sites/${encodeURIComponent(hostname)}:/sites/${encodeURIComponent(sitePath)}`;
             const response = await axios.get(url, { headers });
             const site = response.data;
@@ -135,7 +135,7 @@ class SiteOperations {
     }
 }
 
-/** Construye el token con el módulo común y ejecuta una demo de solo lectura contra book-test. */
+/** Builds the token with the common module and runs a read-only demo against book-test. */
 async function main() {
     try {
         console.log('=== SharePoint Site Operations Example ===\n');

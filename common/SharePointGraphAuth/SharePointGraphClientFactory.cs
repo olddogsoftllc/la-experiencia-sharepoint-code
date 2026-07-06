@@ -5,14 +5,14 @@ using System.Security.Cryptography.X509Certificates;
 namespace LaExperiencia.SharePoint.Common;
 
 /// <summary>
-/// Fábrica única para crear un <see cref="GraphServiceClient"/> autenticado con client secret
-/// (o certificado) a partir de variables de entorno. Reemplaza la auth duplicada en cada capítulo.
+/// Single factory for creating a <see cref="GraphServiceClient"/> authenticated with client secret
+/// (or certificate) from environment variables. Replaces the duplicated auth in each chapter.
 /// </summary>
 public static class SharePointGraphClientFactory
 {
     /// <summary>
-    /// Crea un cliente de Graph autenticado con client secret (client credentials, app-only).
-    /// Lee TENANT_ID, CLIENT_ID y CLIENT_SECRET del entorno.
+    /// Creates a Graph client authenticated with client secret (client credentials, app-only).
+    /// Reads TENANT_ID, CLIENT_ID and CLIENT_SECRET from the environment.
     /// </summary>
     public static GraphServiceClient CreateFromSecret()
     {
@@ -22,8 +22,8 @@ public static class SharePointGraphClientFactory
     }
 
     /// <summary>
-    /// Crea un cliente de Graph autenticado con certificado X.509 (.pfx).
-    /// Lee TENANT_ID, CLIENT_ID, CERTIFICATE_PATH y CERTIFICATE_PASSWORD del entorno.
+    /// Creates a Graph client authenticated with an X.509 certificate (.pfx).
+    /// Reads TENANT_ID, CLIENT_ID, CERTIFICATE_PATH and CERTIFICATE_PASSWORD from the environment.
     /// </summary>
     public static GraphServiceClient CreateFromCertificate()
     {

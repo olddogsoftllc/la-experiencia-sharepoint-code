@@ -1,6 +1,6 @@
 // TermStoreExplorer.cs
-// Ejemplo: Explorar el Term Store de SharePoint usando Microsoft Graph SDK.
-// El cliente de Graph se inyecta por constructor (DI) desde el módulo común.
+// Example: Explore the SharePoint Term Store using Microsoft Graph SDK.
+// The Graph client is injected via constructor (DI) from the common module.
 
 using LaExperiencia.SharePoint.Common;
 using Microsoft.Graph;
@@ -26,7 +26,7 @@ class TermStoreExplorer
 
         try
         {
-            // Obtener información del Term Store
+            // Get Term Store information
             var termStore = await _graphClient.Sites["root"]
                 .TermStore
                 .GetAsync();
@@ -37,7 +37,7 @@ class TermStoreExplorer
             Console.WriteLine($"   Languages: {string.Join(", ", termStore?.LanguageTags ?? new List<string>())}");
             Console.WriteLine();
 
-            // Listar grupos
+            // List groups
             var groups = await _graphClient.Sites["root"]
                 .TermStore
                 .Groups
@@ -49,9 +49,9 @@ class TermStoreExplorer
             {
                 Console.WriteLine($"   📁 {group.DisplayName}");
                 Console.WriteLine($"      ID: {group.Id}");
-                Console.WriteLine($"      Descripción: {group.Description ?? "N/A"}");
+                Console.WriteLine($"      Description: {group.Description ?? "N/A"}");
 
-                // Obtener conjuntos de términos
+                // Get term sets
                 var sets = await _graphClient.Sites["root"]
                     .TermStore
                     .Groups[group.Id]
@@ -73,7 +73,7 @@ class TermStoreExplorer
     }
 
     /// <summary>
-    /// Entry point: construye el cliente con el módulo común y explora el Term Store (solo lectura).
+    /// Entry point: builds the client with the common module and explores the Term Store (read-only).
     /// </summary>
     public static async Task Main(string[] args)
     {
@@ -92,7 +92,7 @@ class TermStoreExplorer
     }
 }
 
-// Extension para string.Repeat
+// Extension for string.Repeat
 public static class StringExtensions
 {
     public static string Repeat(this string s, int count)

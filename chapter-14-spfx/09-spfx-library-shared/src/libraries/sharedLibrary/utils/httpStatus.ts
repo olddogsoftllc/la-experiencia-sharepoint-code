@@ -1,6 +1,6 @@
 /**
  * Categories for an HTTP error from Graph / a custom API.
- * Mirrors the classification shown in the book's cap14 "Manejo de errores y telemetría".
+ * Mirrors the classification shown in the book's chapter 14 "Error handling and telemetry".
  */
 export type HttpStatusCategory =
   | 'network'

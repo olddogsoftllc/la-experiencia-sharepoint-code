@@ -1,8 +1,8 @@
-# Capítulo 6: Managed Metadata y Taxonomía - Ejemplos de Código
+# Chapter 6: Managed Metadata and Taxonomy - Code Samples
 
-Este directorio contiene ejemplos prácticos para trabajar con el Servicio de Metadatos Administrados (Managed Metadata Service) de SharePoint Online mediante Microsoft Graph.
+This directory contains practical examples for working with the SharePoint Online Managed Metadata Service via Microsoft Graph.
 
-## 📁 Estructura de Carpetas
+## 📁 Folder Structure
 
 ```
 capitulo-06-managed-metadata/
@@ -34,75 +34,75 @@ capitulo-06-managed-metadata/
     └── 02-contenttypes-taxonomy/
 ```
 
-## 🎯 Temas Cubiertos
+## 🎯 Topics Covered
 
 ### 01 - Term Store
 
-- Explorar el Term Store del tenant
-- Listar grupos, conjuntos de términos y términos
-- Crear estructuras de taxonomía
-- Gestionar términos jerárquicos
-- Sincronizar términos desde fuentes externas
+- Explore the tenant's Term Store
+- List groups, term sets, and terms
+- Create taxonomy structures
+- Manage hierarchical terms
+- Sync terms from external sources
 
-### 02 - Content Types y Taxonomía
+### 02 - Content Types and Taxonomy
 
-- Crear Content Types con columnas de metadatos
-- Agregar columnas de taxonomía a bibliotecas
-- Establecer valores de metadatos en documentos
-- Buscar y filtrar por valores de taxonomía
-- Mantenimiento de términos
+- Create Content Types with metadata columns
+- Add taxonomy columns to libraries
+- Set metadata values on documents
+- Search and filter by taxonomy values
+- Term maintenance
 
-## 📋 Requisitos Previos
+## 📋 Prerequisites
 
-### Para C#
+### For C#
 
-- .NET 6.0 o superior
-- Paquetes NuGet:
+- .NET 6.0 or higher
+- NuGet packages:
   - Microsoft.Graph >= 5.x
   - Azure.Identity >= 1.10.x
 
-### Para PowerShell
+### For PowerShell
 
 - PowerShell 7.x
-- Módulo PnP.PowerShell >= 2.x
-- O Microsoft Graph PowerShell SDK
+- PnP.PowerShell module >= 2.x
+- Or Microsoft Graph PowerShell SDK
 
-### Para JavaScript/Node.js
+### For JavaScript/Node.js
 
 - Node.js >= 18.x
-- Paquetes npm:
+- npm packages:
   - @microsoft/microsoft-graph-client
   - @azure/identity
 
-### Para Python
+### For Python
 
 - Python >= 3.9
-- Paquetes:
+- Packages:
   - msgraph-sdk
   - azure-identity
 
-### Para Java
+### For Java
 
-- Java 17 o superior
-- Maven o Gradle
-- Dependencias:
+- Java 17 or higher
+- Maven or Gradle
+- Dependencies:
   - com.microsoft.graph:microsoft-graph
   - com.azure:azure-identity
 
-## 🔐 Configuración
+## 🔐 Configuration
 
-### Permisos Requeridos de Microsoft Graph
+### Required Microsoft Graph Permissions
 
-Para ejecutar estos ejemplos se necesitan los siguientes permisos:
+The following permissions are needed to run these examples:
 
-| Permiso | Tipo | Descripción |
+| Permission | Type | Description |
 |---------|------|-------------|
-| `TermStore.Read.All` | Delegado | Leer términos y conjuntos |
-| `TermStore.ReadWrite.All` | Delegado | Crear/modificar términos |
-| `Sites.Read.All` | Delegado | Leer sitios |
-| `Sites.FullControl.All` | Delegado | Gestionar columnas y Content Types |
+| `TermStore.Read.All` | Delegated | Read terms and term sets |
+| `TermStore.ReadWrite.All` | Delegated | Create/modify terms |
+| `Sites.Read.All` | Delegated | Read sites |
+| `Sites.FullControl.All` | Delegated | Manage columns and Content Types |
 
-## 🚀 Ejecución
+## 🚀 Execution
 
 ### C# (Interactive)
 
@@ -141,24 +141,24 @@ cd java/01-termstore
 mvn compile exec:java -Dexec.mainClass="TermStoreExplorer"
 ```
 
-## 📚 Referencias
+## 📚 References
 
-- [Documentación de Microsoft Graph - Term Store](https://docs.microsoft.com/en-us/graph/api/resources/termstore-store)
+- [Microsoft Graph documentation - Term Store](https://docs.microsoft.com/en-us/graph/api/resources/termstore-store)
 - [SharePoint Managed Metadata](https://docs.microsoft.com/en-us/sharepoint/managed-metadata)
-- [Content Types en SharePoint](https://docs.microsoft.com/en-us/sharepoint/governance/content-types-overview)
+- [Content Types in SharePoint](https://docs.microsoft.com/en-us/sharepoint/governance/content-types-overview)
 
-## 💡 Notas Importantes
+## 💡 Important Notes
 
-1. **Requiere cuenta con permisos de administrador** para gestionar el Term Store
-2. **El Term Store es de nivel tenant**, los cambios afectan a toda la organización
-3. **Las columnas de metadatos** deben referenciar conjuntos de términos existentes
-4. **Los términos tienen IDs únicos** que se usan para establecer valores, no los labels
+1. **Requires an account with administrator permissions** to manage the Term Store
+2. **The Term Store is tenant-level**, changes affect the entire organization
+3. **Metadata columns** must reference existing term sets
+4. **Terms have unique IDs** that are used to set values, not the labels
 
-## 📝 Ejercicios Sugeridos
+## 📝 Suggested Exercises
 
-1. Mapear todo el Term Store de tu tenant y exportar a CSV
-2. Crear una taxonomía de proyectos con departamentos y equipos
-3. Agregar columnas de metadatos a una biblioteca y probar la clasificación
-4. Crear un Content Type con múltiples campos de taxonomía
-5. Implementar búsqueda filtrada por valores de taxonomía
-6. Crear un script de sincronización desde Excel/CSV
+1. Map your entire tenant Term Store and export it to CSV
+2. Create a project taxonomy with departments and teams
+3. Add metadata columns to a library and try classification
+4. Create a Content Type with multiple taxonomy fields
+5. Implement filtered search by taxonomy values
+6. Create a sync script from Excel/CSV

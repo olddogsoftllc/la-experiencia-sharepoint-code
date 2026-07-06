@@ -12,30 +12,30 @@ import com.microsoft.kiota.authentication.ObservabilityOptions;
 import java.util.Objects;
 
 /**
- * Fábrica única para crear un {@link GraphServiceClient} autenticado (app-only) a partir
- * de variables de entorno. Soporta dos modos:
+ * Single factory for creating an authenticated (app-only) {@link GraphServiceClient} from
+ * environment variables. Supports two modes:
  *
  * <ul>
- *   <li><b>client secret</b> (por defecto): lee {@code TENANT_ID}/{@code CLIENT_ID}/{@code CLIENT_SECRET}.</li>
- *   <li><b>certificado</b>: lee {@code TENANT_ID}/{@code CLIENT_ID}/{@code CERTIFICATE_PATH}
- *       (+ opcional {@code CERTIFICATE_PASSWORD}). Soporta {@code .pem} (vía
- *       {@code pemCertificate}) y {@code .pfx}/{@code .p12} (vía {@code pfxCertificate}).</li>
+ *   <li><b>client secret</b> (default): reads {@code TENANT_ID}/{@code CLIENT_ID}/{@code CLIENT_SECRET}.</li>
+ *   <li><b>certificate</b>: reads {@code TENANT_ID}/{@code CLIENT_ID}/{@code CERTIFICATE_PATH}
+ *       (+ optional {@code CERTIFICATE_PASSWORD}). Supports {@code .pem} (via
+ *       {@code pemCertificate}) and {@code .pfx}/{@code .p12} (via {@code pfxCertificate}).</li>
  * </ul>
  *
- * <p>Usa {@link #create()} para auto-detectar (cert si {@code CERTIFICATE_PATH} está presente,
- * secret en caso contrario). Los mains de los capítulos 3-7 deben llamar a {@code create()}.
- * Reemplaza la auth duplicada en cada capítulo Java.
+ * <p>Use {@link #create()} to auto-detect (cert if {@code CERTIFICATE_PATH} is present,
+ * secret otherwise). Mains of chapters 3-7 should call {@code create()}.
+ * Replaces the duplicated auth in each Java chapter.
  */
 public final class GraphServiceClientFactory {
 
     private GraphServiceClientFactory() {}
 
     /**
-     * Auto-detecta el modo: certificado si {@code CERTIFICATE_PATH} está presente y
-     * {@code CLIENT_SECRET} ausente; en caso contrario client secret. Recomendado para los
-     * mains de caps 3-7 (mismo contrato que {@code GraphAuthOptions.UsesCertificate} en C#).
+     * Auto-detects the mode: certificate if {@code CERTIFICATE_PATH} is present and
+     * {@code CLIENT_SECRET} is absent; otherwise client secret. Recommended for the
+     * mains of chapters 3-7 (same contract as {@code GraphAuthOptions.UsesCertificate} in C#).
      *
-     * @return un {@link GraphServiceClient} autenticado.
+     * @return an authenticated {@link GraphServiceClient}.
      */
     public static GraphServiceClient create() {
         String certPath = envOrNone("CERTIFICATE_PATH");
@@ -44,19 +44,19 @@ public final class GraphServiceClientFactory {
     }
 
     /**
-     * Construye el cliente forzando el modo indicado.
-     * @param useCertificate {@code true} para certificado, {@code false} para client secret.
+     * Builds the client forcing the indicated mode.
+     * @param useCertificate {@code true} for certificate, {@code false} for client secret.
      */
     public static GraphServiceClient create(boolean useCertificate) {
         return useCertificate ? createFromCertificate() : createFromSecret();
     }
 
-    /** Lee {@code TENANT_ID}, {@code CLIENT_ID} y {@code CLIENT_SECRET} del entorno y construye el cliente. */
+    /** Reads {@code TENANT_ID}, {@code CLIENT_ID} and {@code CLIENT_SECRET} from the environment and builds the client. */
     public static GraphServiceClient createFromSecret() {
         return createFromSecret(requireEnv("TENANT_ID"), requireEnv("CLIENT_ID"), requireEnv("CLIENT_SECRET"));
     }
 
-    /** Variante con parámetros explícitos (para tests / inyección de dependencias). */
+    /** Variant with explicit parameters (for tests / dependency injection). */
     public static GraphServiceClient createFromSecret(String tenantId, String clientId, String clientSecret) {
         if (tenantId == null || tenantId.isBlank() || clientId == null || clientId.isBlank()
                 || clientSecret == null || clientSecret.isBlank()) {
@@ -72,9 +72,9 @@ public final class GraphServiceClientFactory {
     }
 
     /**
-     * Lee {@code TENANT_ID}, {@code CLIENT_ID} y {@code CERTIFICATE_PATH} (+ opcional
-     * {@code CERTIFICATE_PASSWORD}) del entorno y construye el cliente con certificado.
-     * Distingue {@code .pem} de {@code .pfx}/{@code .p12} por la extensión del path.
+     * Reads {@code TENANT_ID}, {@code CLIENT_ID} and {@code CERTIFICATE_PATH} (+ optional
+     * {@code CERTIFICATE_PASSWORD}) from the environment and builds the client with a certificate.
+     * Distinguishes {@code .pem} from {@code .pfx}/{@code .p12} by the path extension.
      */
     public static GraphServiceClient createFromCertificate() {
         return createFromCertificate(
@@ -84,7 +84,7 @@ public final class GraphServiceClientFactory {
                 envOrNone("CERTIFICATE_PASSWORD"));
     }
 
-    /** Variante con parámetros explícitos (para tests / inyección de dependencias). */
+    /** Variant with explicit parameters (for tests / dependency injection). */
     public static GraphServiceClient createFromCertificate(String tenantId, String clientId,
                                                             String certificatePath, String certificatePassword) {
         if (tenantId == null || tenantId.isBlank() || clientId == null || clientId.isBlank()) {
@@ -102,7 +102,7 @@ public final class GraphServiceClientFactory {
         if (lower.endsWith(".pem")) {
             builder.pemCertificate(certificatePath);
         } else {
-            // .pfx o .p12
+            // .pfx or .p12
             builder.pfxCertificate(certificatePath, certificatePassword);
         }
 
@@ -111,24 +111,24 @@ public final class GraphServiceClientFactory {
     }
 
     /**
-     * Construye el {@link GraphServiceClient} desde cualquier {@link com.azure.core.credential.TokenCredential}.
+     * Builds the {@link GraphServiceClient} from any {@link com.azure.core.credential.TokenCredential}.
      *
      * <p>WORKAROUND (bug microsoft-graph 6.1.0 + kiota-auth-azure 1.0.0):
-     * {@code GraphServiceClient(credential, String...)} construye el provider de Kiota pasando un
-     * array varargs (additionalScopes) vacío PERO NO-NULL. El constructor de Kiota hace:
-     * <pre> if (additionalScopes != null)  _scopes = Arrays.asList(additionalScopes);  // inmutable
+     * {@code GraphServiceClient(credential, String...)} builds the Kiota provider passing an
+     * empty (but non-null) varargs array (additionalScopes). Kiota's constructor does:
+     * <pre> if (additionalScopes != null)  _scopes = Arrays.asList(additionalScopes);  // immutable
      *  else                            _scopes = new ArrayList&lt;&gt();                 // mutable</pre>
-     * y luego {@code getAuthorizationToken} invoca {@code _scopes.add(...)}. Con array vacío no-null,
-     * _scopes queda inmutable y {@code .add()} lanza {@code UnsupportedOperationException}.
-     * Solución: construir el provider a mano pasando {@code (String[]) null} al varargs → rama
-     * {@code new ArrayList&lt;&gt;()} (mutable). Usamos el provider del core (microsoft-graph-core)
-     * para que queden configurados los hosts nacionales (graph.microsoft.com, etc.).
+     * and then {@code getAuthorizationToken} calls {@code _scopes.add(...)}. With a non-null empty
+     * array, _scopes is immutable and {@code .add()} throws {@code UnsupportedOperationException}.
+     * Fix: build the provider by hand passing {@code (String[]) null} to the varargs -> the
+     * {@code new ArrayList&lt;&gt();} branch (mutable). We use the core provider (microsoft-graph-core)
+     * so national clouds (graph.microsoft.com, etc.) stay configured.
      */
     private static GraphServiceClient buildClient(com.azure.core.credential.TokenCredential credential) {
         AzureIdentityAccessTokenProvider tokenProvider = new AzureIdentityAccessTokenProvider(
                 credential,
-                (String[]) null,            // scopes (no se usa; el core sobrescribe el host validator)
-                (ObservabilityOptions) null, // observability por defecto
+                (String[]) null,            // scopes (not used; core overrides the host validator)
+                (ObservabilityOptions) null, // default observability
                 (String[]) null);            // additionalScopes (varargs) — null => _scopes mutable
         BaseBearerTokenAuthenticationProvider authProvider =
                 new BaseBearerTokenAuthenticationProvider(tokenProvider);

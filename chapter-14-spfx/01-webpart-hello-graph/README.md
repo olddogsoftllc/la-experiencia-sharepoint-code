@@ -3,7 +3,7 @@
 A React Web Part that searches SharePoint sites through Microsoft Graph using
 `MSGraphClientV3`, a `useGraphQuery` hook, and the SPFx Property Pane.
 
-Demonstrates (covers the book's cap14):
+Demonstrates (covers the book's chapter 14):
 
 - `MSGraphClientV3` obtained in `onInit` and wrapped in a `GraphService`
   (dependency-injected into the component so the component is unit-testable).

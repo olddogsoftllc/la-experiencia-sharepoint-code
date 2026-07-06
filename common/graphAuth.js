@@ -1,17 +1,17 @@
 /**
- * Autenticación compartida para los ejemplos de La Experiencia SharePoint (JavaScript/Node).
+ * Shared authentication for the La Experiencia SharePoint examples (JavaScript/Node).
  *
- * Una sola fuente de verdad para obtener un cliente de Microsoft Graph autenticado
- * (app-only) a partir de variables de entorno. Soporta dos modos:
+ * A single source of truth for obtaining an authenticated (app-only) Microsoft Graph
+ * client from environment variables. Supports two modes:
  *
- * - **client secret** (por defecto): lee ``TENANT_ID``/``CLIENT_ID``/``CLIENT_SECRET``.
- * - **certificado**: lee ``TENANT_ID``/``CLIENT_ID``/``CERTIFICATE_PATH`` (+ opcional
- *   ``CERTIFICATE_PASSWORD``). Se usa automáticamente cuando ``CERTIFICATE_PATH``
- *   está presente; se puede forzar con ``useCertificate: true/false``.
+ * - **client secret** (default): reads ``TENANT_ID``/``CLIENT_ID``/``CLIENT_SECRET``.
+ * - **certificate**: reads ``TENANT_ID``/``CLIENT_ID``/``CERTIFICATE_PATH`` (+ optional
+ *   ``CERTIFICATE_PASSWORD``). Used automatically when ``CERTIFICATE_PATH`` is present;
+ *   can be forced with ``useCertificate: true/false``.
  *
- * Reemplaza el token hand-rolled con axios que cada capítulo duplicaba. Las credenciales
- * son lazy (el token se obtiene, con red, solo al hacer la primera petición a Graph),
- * así que se puede construir el cliente sin red.
+ * Replaces the hand-rolled token-with-axios that each chapter duplicated. Credentials
+ * are lazy (the token is fetched, with network, only when making the first request to
+ * Graph), so the client can be built without network access.
  */
 const { ClientSecretCredential, ClientCertificateCredential } = require('@azure/identity');
 const { Client } = require('@microsoft/microsoft-graph-client');
@@ -25,7 +25,7 @@ const GRAPH_SCOPE = 'https://graph.microsoft.com/.default';
 function requireEnv(name) {
     const value = process.env[name];
     if (!value || !value.trim()) {
-        throw new Error(`Falta la variable de entorno ${name}`);
+        throw new Error(`Missing environment variable ${name}`);
     }
     return value;
 }
@@ -43,14 +43,14 @@ function envOrNone(name) {
 }
 
 /**
- * Construye el TokenCredential apropiado (secret o certificado).
+ * Builds the appropriate TokenCredential (secret or certificate).
  * @param {object} [opts]
  * @param {string} [opts.tenantId]
  * @param {string} [opts.clientId]
  * @param {string} [opts.clientSecret]
  * @param {string} [opts.certificatePath]
  * @param {string} [opts.certificatePassword]
- * @param {boolean} [opts.useCertificate] - Si undefined, auto-detecta por CERTIFICATE_PATH.
+ * @param {boolean} [opts.useCertificate] - If undefined, auto-detected from CERTIFICATE_PATH.
  * @returns {import('@azure/identity').TokenCredential}
  */
 function buildCredential(opts = {}) {
@@ -60,7 +60,7 @@ function buildCredential(opts = {}) {
     const certificatePath = opts.certificatePath !== undefined ? opts.certificatePath : envOrNone('CERTIFICATE_PATH');
     const certificatePassword = opts.certificatePassword !== undefined ? opts.certificatePassword : envOrNone('CERTIFICATE_PASSWORD');
 
-    // Auto-detección: si hay CERTIFICATE_PATH, usar certificado salvo que se force secret.
+    // Auto-detection: if CERTIFICATE_PATH is present, use certificate unless secret is forced.
     let useCertificate = opts.useCertificate;
     if (useCertificate === undefined) {
         useCertificate = certificatePath !== null;
@@ -69,7 +69,7 @@ function buildCredential(opts = {}) {
     if (useCertificate) {
         if (!certificatePath) {
             throw new Error(
-                'Autenticación con certificado seleccionada pero falta CERTIFICATE_PATH'
+                'Certificate authentication selected but CERTIFICATE_PATH is missing'
             );
         }
         return new ClientCertificateCredential(
@@ -91,9 +91,9 @@ function buildCredential(opts = {}) {
 }
 
 /**
- * Crea un cliente de Microsoft Graph autenticado con client credentials.
- * El token se obtiene (con red) únicamente al hacer la primera petición a Graph.
- * @param {object} [opts] - Ver buildCredential.
+ * Creates an authenticated Microsoft Graph client using client credentials.
+ * The token is fetched (with network) only when making the first request to Graph.
+ * @param {object} [opts] - See buildCredential.
  * @returns {Promise<import('@microsoft/microsoft-graph-client').Client>}
  */
 async function getGraphClient(opts = {}) {
@@ -109,9 +109,9 @@ async function getGraphClient(opts = {}) {
 }
 
 /**
- * Obtiene un access token (bearer) para Graph con client credentials.
- * Para los ejemplos que usan REST crudo (axios/fetch) en lugar del cliente del SDK.
- * @param {object} [opts] - Ver buildCredential.
+ * Obtains a (bearer) access token for Graph using client credentials.
+ * For examples that use raw REST (axios/fetch) instead of the SDK client.
+ * @param {object} [opts] - See buildCredential.
  * @returns {Promise<string>}
  */
 async function getAccessToken(opts = {}) {

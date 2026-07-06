@@ -173,7 +173,7 @@ try {
 
     Show-StoredTokens
 
-    Write-Host "`n✅ Ejemplo completado" -ForegroundColor Green
+    Write-Host "`n✅ Example completed" -ForegroundColor Green
 
 } catch {
     Write-Host "❌ Error: $_" -ForegroundColor Red

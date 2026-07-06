@@ -1,6 +1,6 @@
 """
-Capítulo 2: Autenticación
-Ejemplo de Client Credentials con MSAL
+Chapter 2: Authentication
+Client Credentials example with MSAL
 """
 
 import os
@@ -9,14 +9,14 @@ from azure.identity import ClientSecretCredential
 
 
 def main():
-    print("=== Capítulo 2: Autenticación ===\n")
+    print("=== Chapter 2: Authentication ===\n")
 
     tenant_id = os.getenv('TENANT_ID')
     client_id = os.getenv('CLIENT_ID')
     client_secret = os.getenv('CLIENT_SECRET')
 
     if not all([tenant_id, client_id, client_secret]):
-        print("Error: Faltan variables de entorno")
+        print("Error: Missing environment variables")
         return
 
     try:
@@ -29,7 +29,7 @@ def main():
         client = GraphClient(credential=credential)
         org = client.get('/organization').json()
 
-        print("✓ Conexión exitosa")
+        print("✓ Connection successful")
         print(f"  Tenant: {org['value'][0]['displayName']}")
         print(f"  ID: {org['value'][0]['id']}")
 

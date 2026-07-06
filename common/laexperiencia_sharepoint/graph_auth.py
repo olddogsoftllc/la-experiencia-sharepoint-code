@@ -1,17 +1,17 @@
-"""Autenticación compartida para los ejemplos de La Experiencia SharePoint (Python).
+"""Shared authentication for the La Experiencia SharePoint examples (Python).
 
-Una sola fuente de verdad para obtener un GraphServiceClient autenticado (app-only)
-a partir de variables de entorno. Soporta dos modos:
+A single source of truth for obtaining an authenticated (app-only) GraphServiceClient
+from environment variables. Supports two modes:
 
-- **client secret** (por defecto): lee ``TENANT_ID``/``CLIENT_ID``/``CLIENT_SECRET``.
-- **certificado**: lee ``TENANT_ID``/``CLIENT_ID``/``CERTIFICATE_PATH`` (+ opcional
-  ``CERTIFICATE_PASSWORD`` y ``CERTIFICATE_THUMBPRINT``). Soporta ``.pfx``/``.p12``
-  (se extrae el PEM in-memory) y ``.pem`` directo. Se usa automáticamente cuando
-  ``CERTIFICATE_PATH`` está presente; se puede forzar con ``use_certificate=True/False``.
+- **client secret** (default): reads ``TENANT_ID``/``CLIENT_ID``/``CLIENT_SECRET``.
+- **certificate**: reads ``TENANT_ID``/``CLIENT_ID``/``CERTIFICATE_PATH`` (+ optional
+  ``CERTIFICATE_PASSWORD`` and ``CERTIFICATE_THUMBPRINT``). Supports ``.pfx``/``.p12``
+  (the PEM is extracted in-memory) and ``.pem`` directly. Used automatically when
+  ``CERTIFICATE_PATH`` is present; can be forced with ``use_certificate=True/False``.
 
-Reemplaza la auth duplicada que cada capítulo tenía. Las credenciales son lazy
-(``ClientSecretCredential``/``ClientCertificateCredential`` no obtienen token hasta la
-primera petición a Graph), así que se puede construir el cliente sin red.
+Replaces the duplicated auth that each chapter used to have. Credentials are lazy
+(``ClientSecretCredential``/``ClientCertificateCredential`` do not fetch a token until
+the first request to Graph), so the client can be built without network access.
 """
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ _GRAPH_SCOPE = "https://graph.microsoft.com/.default"
 def _require_env(name: str) -> str:
     value = os.environ.get(name)
     if value is None or value.strip() == "":
-        raise ValueError(f"Falta la variable de entorno {name}")
+        raise ValueError(f"Missing environment variable {name}")
     return value
 
 
@@ -39,17 +39,17 @@ def _env_or_none(name: str) -> Optional[str]:
 
 
 def _uses_certificate_env() -> bool:
-    """True si hay ``CERTIFICATE_PATH`` definido (modo cert disponible)."""
+    """True if ``CERTIFICATE_PATH`` is defined (cert mode available)."""
     return _env_or_none("CERTIFICATE_PATH") is not None
 
 
 def _load_cert_material(path: str, password: Optional[str]) -> bytes:
-    """Lee el certificado y devuelve sus bytes brutos.
+    """Reads the certificate and returns its raw bytes.
 
-    ``CertificateCredential`` de azure-identity acepta ``certificate_data`` como bytes
-    PEM **o PKCS12** (PFX), así que no hace falta extraer clave/thumbprint manualmente:
-    leemos el archivo y se lo pasamos tal cual, con la ``certificate_password`` si la
-    hay (para PFX cifrados o PEM cifrados).
+    ``CertificateCredential`` from azure-identity accepts ``certificate_data`` as bytes
+    PEM **or PKCS12** (PFX), so there is no need to manually extract key/thumbprint:
+    we read the file and pass it as-is, with ``certificate_password`` if present
+    (for encrypted PFX or encrypted PEM).
     """
     with open(path, "rb") as fh:
         return fh.read()
@@ -63,14 +63,14 @@ def _build_credential(
     certificate_password: Optional[str],
     use_certificate: Optional[bool],
 ):
-    """Construye el TokenCredential apropiado (secret o cert)."""
+    """Builds the appropriate TokenCredential (secret or cert)."""
     if use_certificate is None:
         use_certificate = certificate_path is not None
 
     if use_certificate:
         if not certificate_path:
             raise ValueError(
-                "Autenticación con certificado seleccionada pero falta CERTIFICATE_PATH"
+                "Certificate authentication selected but CERTIFICATE_PATH is missing"
             )
         cert_bytes = _load_cert_material(certificate_path, certificate_password)
         return CertificateCredential(
@@ -96,10 +96,10 @@ def get_access_token(
     certificate_password: Optional[str] = None,
     use_certificate: Optional[bool] = None,
 ) -> str:
-    """Obtiene un access token (bearer) para Graph con client credentials.
+    """Obtains a (bearer) access token for Graph with client credentials.
 
-    Modo secret por defecto; modo certificado si ``CERTIFICATE_PATH`` está presente
-    o ``use_certificate=True``. Para los ejemplos que usan REST crudo (requests).
+    Secret mode by default; certificate mode if ``CERTIFICATE_PATH`` is present
+    or ``use_certificate=True``. For examples that use raw REST (requests).
     """
     tenant_id = tenant_id or _require_env("TENANT_ID")
     client_id = client_id or _require_env("CLIENT_ID")
@@ -124,11 +124,11 @@ def get_graph_client(
     certificate_password: Optional[str] = None,
     use_certificate: Optional[bool] = None,
 ) -> GraphServiceClient:
-    """Crea un ``GraphServiceClient`` autenticado (client credentials).
+    """Creates an authenticated ``GraphServiceClient`` (client credentials).
 
-    Por defecto lee todo del entorno. Modo secret por defecto; modo certificado si
-    ``CERTIFICATE_PATH`` está presente o ``use_certificate=True``. Los parámetros
-    se pueden inyectar para tests.
+    By default reads everything from the environment. Secret mode by default;
+    certificate mode if ``CERTIFICATE_PATH`` is present or ``use_certificate=True``.
+    Parameters can be injected for tests.
     """
     tenant_id = tenant_id or _require_env("TENANT_ID")
     client_id = client_id or _require_env("CLIENT_ID")

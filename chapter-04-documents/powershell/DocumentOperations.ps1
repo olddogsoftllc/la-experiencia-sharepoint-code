@@ -270,7 +270,7 @@ function Get-FileMetadata {
 function Get-DriveLibraries {
     <#
         .SYNOPSIS
-        Lista las bibliotecas de documentos (drives) de un sitio. Solo lectura.
+        Lists the document libraries (drives) of a site. Read-only.
     #>
     [CmdletBinding()]
     param(
@@ -301,7 +301,7 @@ function Get-DriveLibraries {
     }
 }
 
-# Main execution: demo de solo lectura contra el sitio de pruebas book-test.
+# Main execution: read-only demo against the book-test test site.
 try {
     Write-Host "=== SharePoint Document Operations Example ===" -ForegroundColor Yellow
 
@@ -310,7 +310,7 @@ try {
     $hostname = if ($env:SHAREPOINT_HOSTNAME) { $env:SHAREPOINT_HOSTNAME } else { "olddogsoft1.sharepoint.com" }
     $sitePath = if ($env:SHAREPOINT_SITE_PATH) { $env:SHAREPOINT_SITE_PATH } else { "book-test" }
 
-    # Resolver el sitio por path para obtener su ID.
+    # Resolve the site by path to get its ID.
     $encodedPath = [uri]::EscapeDataString("sites/$sitePath")
     $siteUri = "https://graph.microsoft.com/v1.0/sites/${hostname}:/$encodedPath"
     $site = Invoke-RestMethod -Uri $siteUri -Headers $script:GraphHeaders -Method Get

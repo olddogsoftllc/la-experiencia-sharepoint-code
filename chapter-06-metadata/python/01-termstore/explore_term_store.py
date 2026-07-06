@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # explore_term_store.py
-# Ejemplo: Explorar el Term Store con Microsoft Graph SDK para Python.
-# El GraphServiceClient se inyecta por constructor (DI) desde el módulo común.
+# Example: Explore the Term Store with Microsoft Graph SDK for Python.
+# The GraphServiceClient is injected via constructor (DI) from the common module.
 
 import asyncio
 from msgraph import GraphServiceClient
@@ -20,7 +20,7 @@ class TermStoreExplorer:
         print()
 
         try:
-            # Obtener Term Store
+            # Get Term Store
             term_store = await self.graph_client.sites.by_site_id("root").term_store.get()
 
             print("📚 Term Store Info:")
@@ -29,7 +29,7 @@ class TermStoreExplorer:
             print(f"   Languages: {', '.join(term_store.language_tags or [])}")
             print()
 
-            # Listar grupos
+            # List groups
             groups = await self.graph_client.sites.by_site_id("root").term_store.groups.get()
 
             print(f"📂 Grupos encontrados: {len(groups.value)}\n")
@@ -37,9 +37,9 @@ class TermStoreExplorer:
             for group in groups.value:
                 print(f"   📁 {group.display_name}")
                 print(f"      ID: {group.id}")
-                print(f"      Descripción: {group.description or 'N/A'}")
+                print(f"      Description: {group.description or 'N/A'}")
 
-                # Obtener conjuntos de términos
+                # Get term sets
                 sets = await self.graph_client.sites.by_site_id("root") \
                     .term_store.groups.by_group_id(group.id).sets.get()
 
@@ -54,7 +54,7 @@ class TermStoreExplorer:
 
 
 async def main():
-    # Cliente de Graph vía módulo común (client secret, app-only).
+    # Graph client via common module (client secret, app-only).
     graph_client = get_graph_client()
     explorer = TermStoreExplorer(graph_client)
     await explorer.explore()

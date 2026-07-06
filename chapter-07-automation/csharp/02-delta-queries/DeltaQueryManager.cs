@@ -1,7 +1,7 @@
 // DeltaQueryManager.cs
-// Ejemplo de Delta Queries con Microsoft Graph para sincronizacion incremental
-// Requiere: Microsoft.Graph, Microsoft.Identity.Client
-// Referencia: Capitulo 7 - Automatizacion y Flujos
+// Example of Delta Queries with Microsoft Graph for incremental synchronization
+// Requires: Microsoft.Graph, Microsoft.Identity.Client
+// Reference: Chapter 7 - Automation and Flows
 
 using LaExperiencia.SharePoint.Common;
 using Microsoft.Graph;
@@ -25,8 +25,8 @@ namespace LaExperiencia.SharePoint.Chapter07.Automation
         }
 
         /// <summary>
-        /// Realiza una consulta delta inicial para obtener todos los items
-        /// y almacena el token delta para sincronizaciones posteriores.
+        /// Performs an initial delta query to get all items
+        /// and stores the delta token for subsequent synchronizations.
         /// </summary>
         public async Task<List<DriveItem>> GetInitialDeltaAsync(string driveId, string? folderId = null)
         {
@@ -45,7 +45,7 @@ namespace LaExperiencia.SharePoint.Chapter07.Automation
                 Console.WriteLine($"   Items obtenidos: {deltaResponse.Value.Count}");
             }
 
-            // Guardar token delta para proxima sincronizacion
+            // Save delta token for next synchronization
             var deltaToken = ExtractDeltaToken(deltaResponse?.OdataDeltaLink);
             if (!string.IsNullOrEmpty(deltaToken))
             {
@@ -57,8 +57,8 @@ namespace LaExperiencia.SharePoint.Chapter07.Automation
         }
 
         /// <summary>
-        /// Realiza una sincronizacion delta usando el token almacenado.
-        /// Retorna solo los items que han cambiado desde la ultima consulta.
+        /// Performs a delta synchronization using the stored token.
+        /// Returns only the items that have changed since the last query.
         /// </summary>
         public async Task<List<DriveItem>> GetDeltaChangesAsync(string driveId, string? folderId = null)
         {
@@ -92,7 +92,7 @@ namespace LaExperiencia.SharePoint.Chapter07.Automation
                 }
             }
 
-            // Actualizar token delta
+            // Update delta token
             var newToken = ExtractDeltaToken(deltaResponse?.OdataDeltaLink);
             if (!string.IsNullOrEmpty(newToken))
             {
@@ -103,14 +103,14 @@ namespace LaExperiencia.SharePoint.Chapter07.Automation
         }
 
         /// <summary>
-        /// Consulta delta para listas de SharePoint (items de lista).
+        /// Delta query for SharePoint lists (list items).
         /// </summary>
         public async Task<List<Microsoft.Graph.Models.ListItem>> GetListDeltaAsync(string siteId, string listId)
         {
             Console.WriteLine($"🔄 Consulta delta para lista: {listId}");
 
-            // El SDK v5 no expone delta de items de lista en el fluent path;
-            // se invoca vía URL cruda usando el RequestAdapter.
+            // The v5 SDK does not expose list item delta in the fluent path;
+            // it is invoked via a raw URL using the RequestAdapter.
             var requestInfo = new Microsoft.Kiota.Abstractions.RequestInformation
             {
                 HttpMethod = Microsoft.Kiota.Abstractions.Method.GET,
@@ -129,7 +129,7 @@ namespace LaExperiencia.SharePoint.Chapter07.Automation
                 results.AddRange(deltaResponse.Value);
             }
 
-            // ListItemCollectionResponse no expone OdataDeltaLink; viene en AdditionalData.
+            // ListItemCollectionResponse does not expose OdataDeltaLink; it comes in AdditionalData.
             string? deltaLink = null;
             if (deltaResponse?.AdditionalData != null &&
                 deltaResponse.AdditionalData.TryGetValue("@odata.deltaLink", out var dlObj) &&
@@ -148,15 +148,15 @@ namespace LaExperiencia.SharePoint.Chapter07.Automation
         }
 
         /// <summary>
-        /// Extrae el token delta de la URL de delta link.
+        /// Extracts the delta token from the delta link URL.
         /// </summary>
         private string? ExtractDeltaToken(string? deltaLink)
         {
             if (string.IsNullOrEmpty(deltaLink))
                 return null;
 
-            // Parseo manual del query string (portable, sin depender de System.Web.HttpUtility).
-            // El token suele estar en el parametro ?token= o &deltaToken= (codificado).
+            // Manual parsing of the query string (portable, without depending on System.Web.HttpUtility).
+            // The token is usually in the ?token= or &deltaToken= parameter (encoded).
             int queryStart = deltaLink.IndexOf('?');
             if (queryStart < 0) return null;
             string query = deltaLink.Substring(queryStart + 1);
@@ -174,7 +174,7 @@ namespace LaExperiencia.SharePoint.Chapter07.Automation
         }
 
         /// <summary>
-        /// Muestra los tokens delta almacenados.
+        /// Shows the stored delta tokens.
         /// </summary>
         public void ShowStoredTokens()
         {
@@ -186,8 +186,8 @@ namespace LaExperiencia.SharePoint.Chapter07.Automation
         }
 
         /// <summary>
-        /// Entry point: construye el cliente con el módulo común y ejecuta una consulta delta
-        /// inicial (solo lectura) sobre la primera biblioteca del sitio de pruebas book-test.
+        /// Entry point: builds the client with the common module and runs an initial
+        /// delta query (read-only) over the first library of the book-test test site.
         /// </summary>
         public static async Task Main(string[] args)
         {
@@ -199,11 +199,11 @@ namespace LaExperiencia.SharePoint.Chapter07.Automation
                 var hostname = Environment.GetEnvironmentVariable("SHAREPOINT_HOSTNAME") ?? "olddogsoft1.sharepoint.com";
                 var sitePath = Environment.GetEnvironmentVariable("SHAREPOINT_SITE_PATH") ?? "book-test";
 
-                // Resolver el sitio y su primera biblioteca.
+                // Resolve the site and its first library.
                 var site = await graphClient.Sites[$"{hostname}:/sites/{sitePath}"].GetAsync();
                 if (site == null)
                 {
-                    Console.WriteLine("No se encontró el sitio de pruebas.");
+                    Console.WriteLine("Test site not found.");
                     return;
                 }
                 var drives = await graphClient.Sites[site.Id].Drives.GetAsync();

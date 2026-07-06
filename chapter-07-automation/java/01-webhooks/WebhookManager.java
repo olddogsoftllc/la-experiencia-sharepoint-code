@@ -1,6 +1,6 @@
 // WebhookManager.java
-// Ejemplo: Gestionar suscripciones webhook con Microsoft Graph SDK para Java (v6).
-// El GraphServiceClient se inyecta por constructor (DI) desde el módulo común.
+// Example: Manage webhook subscriptions with Microsoft Graph SDK for Java (v6).
+// The GraphServiceClient is injected via constructor (DI) from the common module.
 
 package com.sharepointexperiencia.automation;
 
@@ -20,7 +20,7 @@ public class WebhookManager {
         this.notificationUrl = notificationUrl;
     }
 
-    /** Lista las suscripciones existentes (solo lectura). */
+    /** Lists existing subscriptions (read-only). */
     public void listSubscriptions() {
         try {
             System.out.println("📋 Listando suscripciones webhook...");
@@ -38,7 +38,7 @@ public class WebhookManager {
     }
 
     public Subscription createDriveSubscription(String driveId) {
-        System.out.println("🔔 Creando suscripción para Drive: " + driveId);
+        System.out.println("🔔 Creating subscription for Drive: " + driveId);
 
         Subscription subscription = new Subscription();
         subscription.setResource("/drives/" + driveId + "/root");
@@ -49,8 +49,8 @@ public class WebhookManager {
 
         Subscription created = graphClient.subscriptions().post(subscription);
 
-        System.out.println("   ✅ Suscripción: " + created.getId());
-        System.out.println("   Expira: " + created.getExpirationDateTime());
+        System.out.println("   ✅ Subscription: " + created.getId());
+        System.out.println("   Expires: " + created.getExpirationDateTime());
 
         return created;
     }
@@ -60,17 +60,17 @@ public class WebhookManager {
         patch.setExpirationDateTime(OffsetDateTime.now().plusDays(2));
 
         Subscription renewed = graphClient.subscriptions().bySubscriptionId(subscriptionId).patch(patch);
-        System.out.println("🔄 Renovada. Expira: " + renewed.getExpirationDateTime());
+        System.out.println("🔄 Renewed. Expires: " + renewed.getExpirationDateTime());
     }
 
     public void deleteSubscription(String subscriptionId) {
         graphClient.subscriptions().bySubscriptionId(subscriptionId).delete();
-        System.out.println("🗑️ Suscripción " + subscriptionId + " eliminada");
+        System.out.println("🗑️ Subscription " + subscriptionId + " deleted");
     }
 
     public static void main(String[] args) {
         try {
-            // create() auto-detecta certificado (si CERTIFICATE_PATH está presente) o client secret.
+            // create() auto-detects a certificate (if CERTIFICATE_PATH is present) or a client secret.
             var client = GraphServiceClientFactory.create();
             var manager = new WebhookManager(client, "https://example.com/webhook");
             manager.listSubscriptions();

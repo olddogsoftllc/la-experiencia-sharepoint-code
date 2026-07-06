@@ -27,7 +27,7 @@ export default class PermissionsPanelWebPartWebPart extends BaseClientSideWebPar
   protected async onInit(): Promise<void> {
     const client: MSGraphClientV3 = await this.context.msGraphClientFactory.getClient('3');
     // Instrumentation key intentionally left empty here; wire it from a config
-    // list / Property Pane in production (see cap14 "Manejo de errores y telemetría").
+    // list / Property Pane in production (see chapter 14 "Error handling and telemetry").
     const telemetry: TelemetryClient = new TelemetryClient();
     this._graphService = new GraphService(client, telemetry);
 

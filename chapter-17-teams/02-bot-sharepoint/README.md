@@ -1,13 +1,13 @@
-# 02 — Bot de Teams que lee SharePoint via Graph
+# 02 — Teams Bot that reads SharePoint via Graph
 
-Bot de Teams (vía 2 del cap17) que responde comandos en el chat leyendo SharePoint con Microsoft Graph. Compilable y testeable offline; requiere hosting público + ngrok en dev para probar en Teams real.
+Teams Bot (path 2 of cap17) that responds to commands in chat by reading SharePoint with Microsoft Graph. Compilable and testable offline; requires public hosting + ngrok in dev to test on a real Teams client.
 
-## Comandos
-- `sites` — lista hasta 10 sites del tenant
-- `docs <nombre>` — busca un site por nombre y lista documentos de su primera biblioteca
-- `help` — ayuda
+## Commands
+- `sites` — lists up to 10 sites in the tenant
+- `docs <name>` — searches a site by name and lists documents from its first library
+- `help` — help
 
-## Archivos
+## Files
 ```
 02-bot-sharepoint/
 ├── src/
@@ -21,9 +21,9 @@ Bot de Teams (vía 2 del cap17) que responde comandos en el chat leyendo SharePo
 └── README.md
 ```
 
-## Setup completo (paso a paso)
+## Full setup (step by step)
 
-### 1. App Registration en Entra ID
+### 1. App Registration in Entra ID
 ```
 Entra ID → App registrations → New registration
 ├── Name: "SharePoint Teams Bot"
@@ -57,7 +57,7 @@ npm test      # 4 tests unitarios de graphAuth (sin red)
 npm run build # tsc → dist/
 ```
 
-### 5. Desarrollo local con ngrok
+### 5. Local development with ngrok
 ```bash
 npm start                              # localhost:3978
 ngrok http 3978                        # → https://abc.ngrok.io
@@ -65,24 +65,24 @@ ngrok http 3978                        # → https://abc.ngrok.io
 ```
 
 ### 6. Manifest + sideload
-- Edita `manifest.json`: `id` (UUID nuevo), `bots[0].botId` = `MICROSOFT_APP_ID` (clientId de Entra).
-- Crea `color.png` (192×192) + `outline.png` (32×32 monocromo).
+- Edit `manifest.json`: `id` (new UUID), `bots[0].botId` = `MICROSOFT_APP_ID` (Entra clientId).
+- Create `color.png` (192×192) + `outline.png` (32×32 monochrome).
 - `zip sp-bot.zip manifest.json color.png outline.png`
 - Teams → Apps → Manage your apps → Upload a custom app.
 
-### 7. Producción
-- Despliega a Azure App Service (Node Linux): mismo código, `npm start`.
+### 7. Production
+- Deploy to Azure App Service (Node Linux): same code, `npm start`.
 - Azure Bot → Messaging endpoint = `https://<prod>/api/messages`.
-- Quita ngrok.
+- Remove ngrok.
 
-## Gobernanza
-- **Auth**: app-only con `Sites.Selected` en producción (no `Sites.ReadWrite.All`). El bot es una app, no un usuario.
-- **Secrets**: `.env` en `.gitignore`, jamás al repo. En App Service usa config settings (o Key Vault reference).
-- **Auditoría**: loguea `context.activity.from.aadObjectId` + texto + resultado a Application Insights.
-- **Sin escritura**: este bot solo lee. Añadir `create`/`delete` requiere confirmación por Adaptive Card (ver cap17).
-- **Scopes**: `personal` + `team` — en `team`, todos los miembros invocan el bot; revisa que encaje con tu modelo de permisos.
+## Governance
+- **Auth**: app-only with `Sites.Selected` in production (not `Sites.ReadWrite.All`). The bot is an app, not a user.
+- **Secrets**: `.env` in `.gitignore`, never committed to the repo. In App Service use config settings (or a Key Vault reference).
+- **Auditing**: log `context.activity.from.aadObjectId` + text + outcome to Application Insights.
+- **No writes**: this bot only reads. Adding `create`/`delete` requires confirmation via an Adaptive Card (see cap17).
+- **Scopes**: `personal` + `team` — in `team`, all members invoke the bot; verify that this fits your permission model.
 
-## Notas honestas
-- `@microsoft/microsoft-graph-client` v3 requiere `isomorphic-fetch` como polyfill de `fetch` en Node (ya en deps). Sin él, `client.api().get()` falla con "fetch is not defined".
-- `Sites.Selected` requiere que el admin conceda acceso del app a sites concretos (`Add-PnPAzureADAppSitePermission`). Con `Sites.Read.All` funciona sin ese paso, pero es más privilegio del necesario — úsalo solo en dev.
-- El bot usa **app-only** (no On-Behalf-Of del usuario que escribe). Eso significa que ve todos los sites que la app tenga permitido, **no** los del usuario. Para respetar permisos por usuario, implementa OBO flow (más complejo, ver cap17 §SSO).
+## Honest notes
+- `@microsoft/microsoft-graph-client` v3 requires `isomorphic-fetch` as a `fetch` polyfill in Node (already in deps). Without it, `client.api().get()` fails with "fetch is not defined".
+- `Sites.Selected` requires the admin to grant the app access to specific sites (`Add-PnPAzureADAppSitePermission`). With `Sites.Read.All` it works without that step, but it is more privilege than necessary — use it only in dev.
+- The bot uses **app-only** (not On-Behalf-Of the user who writes). This means it sees all the sites the app is allowed to access, **not** the user's sites. To respect per-user permissions, implement the OBO flow (more complex, see cap17 §SSO).

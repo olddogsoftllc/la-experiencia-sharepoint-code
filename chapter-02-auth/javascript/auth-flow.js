@@ -1,6 +1,6 @@
 /**
- * Capítulo 2: Autenticación
- * Flujo de Client Credentials
+ * Chapter 2: Authentication
+ * Client Credentials flow
  */
 
 require('dotenv').config();
@@ -13,10 +13,10 @@ const clientId = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
 
 async function main() {
-    console.log('=== Capítulo 2: Autenticación ===\n');
+    console.log('=== Chapter 2: Authentication ===\n');
 
     if (!tenantId || !clientId || !clientSecret) {
-        console.error('Error: Faltan variables de entorno');
+        console.error('Error: Missing environment variables');
         process.exit(1);
     }
 
@@ -30,7 +30,7 @@ async function main() {
 
         const org = await client.api('/organization').get();
 
-        console.log('✓ Conexión exitosa');
+        console.log('✓ Connection successful');
         console.log(`  Tenant: ${org.value[0].displayName}`);
         console.log(`  ID: ${org.value[0].id}`);
     } catch (error) {

@@ -3,7 +3,7 @@
 A **Field Customizer** that renders a list column's value as a colored badge
 based on the priority text: `high` → red, `low` → green, anything else → grey.
 
-Covers the book's cap14 "Tipos de Extensiones" (Field Customizer) and shows the
+Covers the book's chapter 14 "Types of Extensions" (Field Customizer) and shows the
 `BaseFieldCustomizer.onRenderCell` lifecycle with CSS Modules.
 
 ## How it works

@@ -19,13 +19,13 @@ namespace LaExperiencia.SharePoint.Chapter05.Permissions
 {
     /// <summary>
     /// Example class demonstrating SharePoint permission operations.
-    /// El cliente de Graph se inyecta por constructor (DI) desde el módulo común.
+    /// The Graph client is injected via constructor (DI) from the common module.
     /// </summary>
     public class PermissionOperations
     {
         private readonly GraphServiceClient _graphClient;
 
-        /// <summary>Crea una instancia con un cliente de Graph inyectado (DI).</summary>
+        /// <summary>Creates an instance with an injected Graph client (DI).</summary>
         public PermissionOperations(GraphServiceClient graphClient)
         {
             _graphClient = graphClient ?? throw new ArgumentNullException(nameof(graphClient));
@@ -261,7 +261,7 @@ namespace LaExperiencia.SharePoint.Chapter05.Permissions
         }
 
         /// <summary>
-        /// Lists the permissions of a site (solo lectura).
+        /// Lists the permissions of a site (read-only).
         /// </summary>
         public async Task ListSitePermissionsAsync(string siteId)
         {
@@ -294,8 +294,8 @@ namespace LaExperiencia.SharePoint.Chapter05.Permissions
         }
 
         /// <summary>
-        /// Entry point: construye el cliente con el módulo común y ejecuta una demo de solo
-        /// lectura listando los permisos del sitio de pruebas book-test.
+        /// Entry point: builds the client with the common module and runs a read-only
+        /// demo listing the permissions of the book-test test site.
         /// </summary>
         public static async Task Main(string[] args)
         {
@@ -307,18 +307,18 @@ namespace LaExperiencia.SharePoint.Chapter05.Permissions
                 var hostname = Environment.GetEnvironmentVariable("SHAREPOINT_HOSTNAME") ?? "olddogsoft1.sharepoint.com";
                 var sitePath = Environment.GetEnvironmentVariable("SHAREPOINT_SITE_PATH") ?? "book-test";
 
-                // Resolver el sitio por path para obtener su ID.
+                // Resolve the site by path to get its ID.
                 var site = await graphClient.Sites[$"{hostname}:/sites/{sitePath}"].GetAsync();
                 if (site == null)
                 {
-                    Console.WriteLine("No se encontró el sitio de pruebas.");
+                    Console.WriteLine("Test site not found.");
                     return;
                 }
                 var siteId = site.Id ?? throw new InvalidOperationException("El sitio no tiene ID.");
 
-                // Listar permisos de un ITEM del drive del sitio de pruebas (dentro del grant
-                // Sites.Selected). Listar /sites/{id}/permissions requiere permisos de admin
-                // (Sites.Manage/FullControl), fuera del alcance de mínimo privilegio.
+                // List permissions for an ITEM in the test site drive (within the
+                // Sites.Selected grant). Listing /sites/{id}/permissions requires admin
+                // permissions (Sites.Manage/FullControl), outside the least-privilege scope.
                 var drives = await graphClient.Sites[siteId].Drives.GetAsync();
                 var firstDrive = drives?.Value?.FirstOrDefault();
                 if (firstDrive == null)

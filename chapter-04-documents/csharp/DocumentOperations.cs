@@ -17,13 +17,13 @@ namespace LaExperiencia.SharePoint.Chapter04.Documents
 {
     /// <summary>
     /// Example class demonstrating SharePoint document operations.
-    /// El cliente de Graph se inyecta por constructor (DI) desde el módulo común.
+    /// The Graph client is injected via constructor (DI) from the common module.
     /// </summary>
     public class DocumentOperations
     {
         private readonly GraphServiceClient _graphClient;
 
-        /// <summary>Crea una instancia con un cliente de Graph inyectado (DI).</summary>
+        /// <summary>Creates an instance with an injected Graph client (DI).</summary>
         public DocumentOperations(GraphServiceClient graphClient)
         {
             _graphClient = graphClient ?? throw new ArgumentNullException(nameof(graphClient));
@@ -100,7 +100,7 @@ namespace LaExperiencia.SharePoint.Chapter04.Documents
 
                 if (stream == null)
                 {
-                    throw new InvalidOperationException("Graph no devolvió contenido para el item solicitado.");
+                    throw new InvalidOperationException("Graph returned no content for the requested item.");
                 }
 
                 // Save to local file
@@ -250,7 +250,7 @@ namespace LaExperiencia.SharePoint.Chapter04.Documents
         /// <summary>
         /// Entry point for the example
         /// <summary>
-        /// Lists the document libraries (drives) of a site. Solo lectura.
+        /// Lists the document libraries (drives) of a site. Read-only.
         /// </summary>
         public async Task ListDrivesAsync(string siteId)
         {
@@ -277,8 +277,8 @@ namespace LaExperiencia.SharePoint.Chapter04.Documents
         }
 
         /// <summary>
-        /// Entry point: construye el cliente con el módulo común y ejecuta una demo de solo
-        /// lectura listando las bibliotecas del sitio de pruebas book-test.
+        /// Entry point: builds the client with the common module and runs a read-only
+        /// demo listing the libraries of the book-test test site.
         /// </summary>
         public static async Task Main(string[] args)
         {
@@ -290,11 +290,11 @@ namespace LaExperiencia.SharePoint.Chapter04.Documents
                 var hostname = Environment.GetEnvironmentVariable("SHAREPOINT_HOSTNAME") ?? "olddogsoft1.sharepoint.com";
                 var sitePath = Environment.GetEnvironmentVariable("SHAREPOINT_SITE_PATH") ?? "book-test";
 
-                // Resolver el sitio por path para obtener su ID (el path form no sirve para .Drives).
+                // Resolve the site by path to get its ID (the path form does not work for .Drives).
                 var site = await graphClient.Sites[$"{hostname}:/sites/{sitePath}"].GetAsync();
                 if (site == null)
                 {
-                    Console.WriteLine("No se encontró el sitio de pruebas.");
+                    Console.WriteLine("Test site not found.");
                     return;
                 }
                 var siteId = site.Id ?? throw new InvalidOperationException("El sitio no tiene ID.");

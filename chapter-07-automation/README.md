@@ -1,8 +1,8 @@
-# Capítulo 7: Automatización y Flujos - Ejemplos de Código
+# Chapter 7: Automation and Flows - Code Samples
 
-Este directorio contiene ejemplos prácticos para implementar automatización en SharePoint Online mediante webhooks, delta queries y sincronización de datos.
+This directory contains practical examples for implementing automation in SharePoint Online via webhooks, delta queries, and data synchronization.
 
-## 📁 Estructura de Carpetas
+## 📁 Folder Structure
 
 ```
 capitulo-07-automatizacion/
@@ -24,41 +24,41 @@ capitulo-07-automatizacion/
         └── WebhookManager.java
 ```
 
-## 🎯 Temas Cubiertos
+## 🎯 Topics Covered
 
-### 01 - Webhooks y Suscripciones
+### 01 - Webhooks and Subscriptions
 
-- Crear suscripciones para Drive items
-- Renovación automática de suscripciones
-- Eliminar suscripciones obsoletas
-- Listar suscripciones activas
-- Procesar notificaciones webhook (ejemplo en capítulo)
+- Create subscriptions for Drive items
+- Automatic subscription renewal
+- Remove stale subscriptions
+- List active subscriptions
+- Process webhook notifications (example in the chapter)
 
-### 02 - Delta Queries (próximamente)
+### 02 - Delta Queries (coming soon)
 
-- Sincronización incremental
-- Almacenamiento de deltaLink
-- Manejo de eliminaciones y renombres
-- Sincronización bidireccional
+- Incremental synchronization
+- Storing the deltaLink
+- Handling deletions and renames
+- Bidirectional synchronization
 
-## 📋 Requisitos Previos
+## 📋 Prerequisites
 
-### Permisos Requeridos
+### Required Permissions
 
-| Permiso | Descripción |
+| Permission | Description |
 |---------|-------------|
-| `Subscriptions.Read.All` | Leer suscripciones |
-| `Subscriptions.ReadWrite.All` | Crear/modificar suscripciones |
+| `Subscriptions.Read.All` | Read subscriptions |
+| `Subscriptions.ReadWrite.All` | Create/modify subscriptions |
 
-### Configuración del Endpoint Webhook
+### Webhook Endpoint Configuration
 
-Tu endpoint debe:
-1. Ser accesible públicamente (HTTPS)
-2. Responder al handshake de validación (devolver el token)
-3. Responder con 202 Accepted para notificaciones
-4. Procesar de forma asíncrona
+Your endpoint must:
+1. Be publicly accessible (HTTPS)
+2. Respond to the validation handshake (return the token)
+3. Respond with 202 Accepted for notifications
+4. Process asynchronously
 
-### ngrok para Desarrollo Local
+### ngrok for Local Development
 
 ```bash
 # Instalar ngrok
@@ -71,7 +71,7 @@ ngrok http https://localhost:5001
 # https://abc123.ngrok.io/api/webhooks
 ```
 
-## 🚀 Ejecución
+## 🚀 Execution
 
 ### C#
 
@@ -110,9 +110,9 @@ cd java/01-webhooks
 mvn compile exec:java -Dexec.mainClass="WebhookManager"
 ```
 
-## 🔐 Seguridad
+## 🔐 Security
 
-### Validación del Client State
+### Client State Validation
 
 ```csharp
 if (notification.ClientState != storedClientState) {
@@ -121,29 +121,29 @@ if (notification.ClientState != storedClientState) {
 }
 ```
 
-### Encabezados Importantes
+### Important Headers
 
-- `X-Microsoft-Skype-Chain-ID`: ID de la notificación
+- `X-Microsoft-Skype-Chain-ID`: notification ID
 - `Content-Type: application/json`
 
-## 📚 Referencias
+## 📚 References
 
 - [Microsoft Graph Webhooks](https://docs.microsoft.com/en-us/graph/webhooks)
 - [Delta Query Overview](https://docs.microsoft.com/en-us/graph/delta-query-overview)
 - [Change Notifications Lifecycle](https://docs.microsoft.com/en-us/graph/webhooks-lifecycle)
 
-## ⚠️ Limitaciones
+## ⚠️ Limitations
 
-- Suscripciones expiran en máximo 3 días
-- Se requiere renovación automática
-- Máximo 10,000 suscripciones por organización
-- El endpoint debe responder en < 30 segundos
+- Subscriptions expire in a maximum of 3 days
+- Automatic renewal is required
+- Maximum 10,000 subscriptions per organization
+- The endpoint must respond in < 30 seconds
 
-## 💡 Mejores Prácticas
+## 💡 Best Practices
 
-1. **Siempre encolar** las notificaciones, no procesar sincrónicamente
-2. **Implementar retry** con backoff exponencial
-3. **Validar clientState** para evitar spoofing
-4. **Responder rápido** con 202 Accepted
-5. **Renovar suscripciones** antes de expiración
-6. **Limpiar suscripciones** obsoletas regularmente
+1. **Always queue** notifications, do not process synchronously
+2. **Implement retry** with exponential backoff
+3. **Validate clientState** to prevent spoofing
+4. **Respond quickly** with 202 Accepted
+5. **Renew subscriptions** before expiration
+6. **Clean up** stale subscriptions regularly

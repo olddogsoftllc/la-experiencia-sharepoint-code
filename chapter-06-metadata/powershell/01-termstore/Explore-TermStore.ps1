@@ -1,5 +1,5 @@
 # Explore-TermStore.ps1
-# Ejemplo: Explorar el Term Store usando PnP.PowerShell
+# Example: Explore the Term Store using PnP.PowerShell
 
 param(
     [Parameter(Mandatory=$true)]
@@ -17,7 +17,7 @@ function Explore-TermStore {
     try {
         Connect-PnPOnline -Url $Url -Interactive
 
-        # Obtener Term Store
+        # Get Term Store
         $termStore = Get-PnPTermStore
 
         Write-Host "📚 Term Store Info:" -ForegroundColor Yellow
@@ -26,7 +26,7 @@ function Explore-TermStore {
         Write-Host "   Languages: $($termStore.Languages -join ', ')"
         Write-Host
 
-        # Listar grupos
+        # List groups
         $groups = Get-PnPTermGroup
 
         Write-Host "📂 Grupos encontrados: $($groups.Count)" -ForegroundColor Yellow
@@ -35,9 +35,9 @@ function Explore-TermStore {
         foreach ($group in $groups) {
             Write-Host "   📁 $($group.Name)" -ForegroundColor Green
             Write-Host "      ID: $($group.Id)"
-            Write-Host "      Descripción: $($group.Description)"
+            Write-Host "      Description: $($group.Description)"
 
-            # Obtener conjuntos de términos
+            # Get term sets
             $termSets = Get-PnPTermSet -TermGroup $group.Name
 
             foreach ($termSet in $termSets) {
@@ -54,5 +54,5 @@ function Explore-TermStore {
     }
 }
 
-# Ejecutar
+# Run
 Explore-TermStore -Url $SiteUrl

@@ -5,8 +5,8 @@ Chapter 03: Sites
 SharePoint Site Operations Example
 Demonstrates listing, creating, and retrieving SharePoint sites.
 
-Usa el módulo de auth compartido (common/laexperiencia_sharepoint): el access token
-se inyecta por constructor (DI), no se obtiene dentro de la clase.
+Uses the shared auth module (common/laexperiencia_sharepoint): the access token is
+injected via constructor (DI), not obtained inside the class.
 """
 
 import sys
@@ -57,7 +57,7 @@ class SiteOperations:
         """Gets a specific site by hostname and site path (e.g. contoso.sharepoint.com / book-test)."""
         try:
             print(f"Fetching site: {hostname}/sites/{site_path}")
-            # Formato Graph path-based: /sites/{hostname}:/sites/{path}
+            # Graph path-based format: /sites/{hostname}:/sites/{path}
             url = (
                 f"{GRAPH_BASE}/sites/"
                 f"{requests.utils.quote(hostname, safe='')}:/sites/"
@@ -131,7 +131,7 @@ class SiteOperations:
 
 
 def main():
-    """Construye el token con el módulo común y ejecuta una demo de solo lectura contra book-test."""
+    """Builds the token with the common module and runs a read-only demo against book-test."""
     try:
         print("=== SharePoint Site Operations Example ===\n")
         import os

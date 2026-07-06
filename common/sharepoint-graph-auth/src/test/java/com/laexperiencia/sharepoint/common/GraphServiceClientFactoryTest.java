@@ -16,16 +16,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * Tests de GraphServiceClientFactory. Los credentials de Azure Identity son lazy: no hacen
- * red al construir el GraphServiceClient.
+ * Tests for GraphServiceClientFactory. Azure Identity credentials are lazy: they do not
+ * touch the network when constructing the GraphServiceClient.
  *
- * <p>Para el modo certificado, los tests generan un PEM y un P12 self-signed con openssl en
- * {@link BeforeAll} (sin deps Java extra) y los inyectan vía los overloads con parámetros
- * explícitos. Si openssl no está disponible, los tests de cert se skipan ({@link Assumptions}).
+ * <p>For certificate mode, the tests generate a self-signed PEM and P12 with openssl in
+ * {@link BeforeAll} (no extra Java deps) and inject them via the overloads with explicit
+ * parameters. If openssl is not available, the cert tests are skipped ({@link Assumptions}).
  *
- * <p>Nota: {@code System.getenv()} es inmutable en Java en runtime, por eso los tests de cert
- * usan los overloads {@code createFromCertificate(tenant, client, path, password)} en lugar
- * de mutar el entorno (como hacen los tests de Python/JS con monkeypatch/process.env).
+ * <p>Note: {@code System.getenv()} is immutable in Java at runtime, so the cert tests use
+ * the {@code createFromCertificate(tenant, client, path, password)} overloads instead of
+ * mutating the environment (as the Python/JS tests do with monkeypatch/process.env).
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GraphServiceClientFactoryTest {
@@ -40,7 +40,7 @@ class GraphServiceClientFactoryTest {
             Process version = new ProcessBuilder("openssl", "version").redirectErrorStream(true).start();
             if (version.waitFor() != 0) { return; }
         } catch (IOException e) {
-            return; // openssl no disponible: tests de cert se skiparán
+            return; // openssl not available: cert tests will be skipped
         }
 
         tmpDir = Files.createTempDirectory("lesp-jcert-");
@@ -52,9 +52,9 @@ class GraphServiceClientFactoryTest {
         exec("openssl", "req", "-x509", "-newkey", "rsa:2048",
                 "-keyout", keyPem.toString(), "-out", certPem.toString(),
                 "-days", "1", "-nodes", "-subj", "/CN=fake");
-        // PEM = clave privada + certificado (lo que espera pemCertificate).
+        // PEM = private key + certificate (what pemCertificate expects).
         Files.writeString(pemPath, Files.readString(keyPem) + Files.readString(certPem));
-        // P12 cifrado con password "changeit" (lo que espera pfxCertificate).
+        // P12 encrypted with password "changeit" (what pfxCertificate expects).
         exec("openssl", "pkcs12", "-export", "-out", p12Path.toString(),
                 "-inkey", keyPem.toString(), "-in", certPem.toString(),
                 "-passout", "pass:changeit");
@@ -78,20 +78,20 @@ class GraphServiceClientFactoryTest {
 
     @Test
     void returnsClient_whenSecretEnvPresent() {
-        // Fake env inyectado por surefire (TENANT_ID/CLIENT_ID/CLIENT_SECRET).
+        // Fake env injected by surefire (TENANT_ID/CLIENT_ID/CLIENT_SECRET).
         GraphServiceClient client = GraphServiceClientFactory.createFromSecret();
         assertNotNull(client);
     }
 
     @Test
     void throws_whenEnvMissing() {
-        // Este test solo pasa si el proceso NO tiene TENANT_ID en su entorno.
+        // This test only passes if the process does NOT have TENANT_ID in its environment.
         String tenant = System.getenv("TENANT_ID");
         if (tenant != null && !tenant.isBlank()) return;
         assertThrows(IllegalArgumentException.class, GraphServiceClientFactory::createFromSecret);
     }
 
-    // --- Certificado ---
+    // --- Certificate ---
 
     @Test
     void createFromCertificate_throws_whenPathNull() {
@@ -111,7 +111,7 @@ class GraphServiceClientFactoryTest {
 
     @Test
     void createFromCertificate_buildsClientFromPem() {
-        Assumptions.assumeTrue(pemPath != null, "openssl no disponible");
+        Assumptions.assumeTrue(pemPath != null, "openssl not available");
         GraphServiceClient client = GraphServiceClientFactory.createFromCertificate(
                 "fake-tenant", "fake-client", pemPath.toString(), null);
         assertNotNull(client);
@@ -119,7 +119,7 @@ class GraphServiceClientFactoryTest {
 
     @Test
     void createFromCertificate_buildsClientFromP12() {
-        Assumptions.assumeTrue(p12Path != null, "openssl no disponible");
+        Assumptions.assumeTrue(p12Path != null, "openssl not available");
         GraphServiceClient client = GraphServiceClientFactory.createFromCertificate(
                 "fake-tenant", "fake-client", p12Path.toString(), "changeit");
         assertNotNull(client);

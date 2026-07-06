@@ -1,6 +1,6 @@
 // TermStoreExplorer.java
-// Ejemplo: Explorar el Term Store con Microsoft Graph SDK para Java (v6).
-// El GraphServiceClient se inyecta por constructor (DI) desde el módulo común.
+// Example: Explore the Term Store with Microsoft Graph SDK for Java (v6).
+// The GraphServiceClient is injected via constructor (DI) from the common module.
 
 package com.sharepointexperiencia.managedmetadata;
 
@@ -21,7 +21,7 @@ public class TermStoreExplorer {
         System.out.println();
 
         try {
-            // Obtener Term Store (API v6: sites().bySiteId(...).termStore())
+            // Get Term Store (API v6: sites().bySiteId(...).termStore())
             var termStore = graphClient.sites().bySiteId("root").termStore().get();
 
             System.out.println("📚 Term Store Info:");
@@ -29,7 +29,7 @@ public class TermStoreExplorer {
             System.out.println("   Default Language: " + termStore.getDefaultLanguageTag());
             System.out.println();
 
-            // Listar grupos
+            // List groups
             var groups = graphClient.sites().bySiteId("root").termStore().groups().get();
 
             int groupCount = groups != null && groups.getValue() != null ? groups.getValue().size() : 0;
@@ -40,9 +40,9 @@ public class TermStoreExplorer {
                     System.out.println("   📁 " + group.getDisplayName());
                     System.out.println("      ID: " + group.getId());
                     String desc = group.getDescription() != null ? group.getDescription() : "N/A";
-                    System.out.println("      Descripción: " + desc);
+                    System.out.println("      Description: " + desc);
 
-                    // Obtener conjuntos de términos
+                    // Get term sets
                     var sets = graphClient.sites().bySiteId("root")
                             .termStore().groups().byGroupId(group.getId()).sets().get();
 
@@ -64,7 +64,7 @@ public class TermStoreExplorer {
 
     public static void main(String[] args) {
         try {
-            // create() auto-detecta certificado (si CERTIFICATE_PATH está presente) o client secret.
+            // create() auto-detects a certificate (if CERTIFICATE_PATH is present) or a client secret.
             var client = GraphServiceClientFactory.create();
             new TermStoreExplorer(client).explore();
             System.out.println("\nTerm Store exploration completed.");

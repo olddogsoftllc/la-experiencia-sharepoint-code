@@ -1,5 +1,5 @@
 // ContentTypeWithMetadata.cs
-// Ejemplo: Crear Content Type con columnas de metadatos administrados
+// Example: Create a Content Type with managed metadata columns
 
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
@@ -21,7 +21,7 @@ class ContentTypeWithMetadata
 
         try
         {
-            // Crear Content Type
+            // Create Content Type
             var contentType = new ContentType
             {
                 Name = "Documento Corporativo",
@@ -38,8 +38,8 @@ class ContentTypeWithMetadata
                 Console.WriteLine($"   ✅ Content Type creado: {created.Id}");
             }
 
-            // Agregar columnas de metadatos (ejemplo simplificado)
-            // Nota: En producción, primero crear columnas de sitio vinculadas al Term Store
+            // Add metadata columns (simplified example)
+            // Note: In production, first create site columns linked to the Term Store
 
         }
         catch (Exception ex)

@@ -7,7 +7,7 @@ export interface ITelemetryEvent {
  * Minimal telemetry client stub. Records events in memory for inspection.
  * In production, wire `trackSuccess`/`trackError` to Application Insights
  * (`@microsoft/applicationinsights-web`) when an instrumentation key is set —
- * see the book's cap14 "Manejo de errores y telemetría".
+ * see the book's chapter 14 "Error handling and telemetry".
  */
 export class TelemetryClient {
   private readonly _instrumentationKey: string | undefined;

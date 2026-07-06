@@ -1,9 +1,9 @@
 #Requires -Modules Microsoft.Graph.Authentication
 <#
 .SYNOPSIS
-    Capítulo 2: Autenticación con Microsoft Graph
+    Chapter 2: Authentication with Microsoft Graph
 .DESCRIPTION
-    Conecta a Microsoft Graph usando Client Credentials.
+    Connects to Microsoft Graph using Client Credentials.
 .EXAMPLE
     .\Connect-Graph.ps1
 #>
@@ -13,11 +13,11 @@ $ClientId = $env:CLIENT_ID
 $ClientSecret = $env:CLIENT_SECRET
 
 if (-not $TenantId -or -not $ClientId -or -not $ClientSecret) {
-    Write-Error "Faltan variables de entorno requeridas"
+    Write-Error "Missing required environment variables"
     exit 1
 }
 
-Write-Host "=== Capítulo 2: Autenticación ===" -ForegroundColor Cyan
+Write-Host "=== Chapter 2: Authentication ===" -ForegroundColor Cyan
 
 $SecureSecret = ConvertTo-SecureString -String $ClientSecret -AsPlainText -Force
 $Credential = New-Object System.Management.Automation.PSCredential($ClientId, $SecureSecret)
@@ -25,10 +25,10 @@ $Credential = New-Object System.Management.Automation.PSCredential($ClientId, $S
 try {
     Connect-MgGraph -TenantId $TenantId -ClientSecretCredential $Credential
     $Context = Get-MgContext
-    Write-Host "✓ Conexión exitosa" -ForegroundColor Green
+    Write-Host "✓ Connection successful" -ForegroundColor Green
     Write-Host "  Tenant: $($Context.TenantId)" -ForegroundColor Gray
     Write-Host "  App: $($Context.ClientId)" -ForegroundColor Gray
 }
 catch {
-    Write-Error "✗ Error de conexión: $_"
+    Write-Error "✗ Connection error: $_"
 }

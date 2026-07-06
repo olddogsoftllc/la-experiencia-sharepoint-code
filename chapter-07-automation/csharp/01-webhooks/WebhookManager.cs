@@ -1,5 +1,5 @@
 // WebhookManager.cs
-// Ejemplo: Crear y gestionar suscripciones webhook en Microsoft Graph
+// Example: Create and manage webhook subscriptions in Microsoft Graph
 
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
@@ -19,7 +19,7 @@ public class WebhookManager
 
     public async Task<Subscription> CreateDriveSubscriptionAsync(string driveId)
     {
-        Console.WriteLine($"🔔 Creando suscripción para Drive: {driveId}");
+        Console.WriteLine($"🔔 Creating subscription for Drive: {driveId}");
 
         var subscription = new Subscription
         {
@@ -31,10 +31,10 @@ public class WebhookManager
         };
 
         var created = await _graphClient.Subscriptions.PostAsync(subscription);
-        if (created == null) throw new InvalidOperationException("Graph no devolvió la suscripción creada.");
+        if (created == null) throw new InvalidOperationException("Graph did not return the created subscription.");
 
-        Console.WriteLine($"   ✅ Suscripción: {created.Id}");
-        Console.WriteLine($"   Expira: {created.ExpirationDateTime}");
+        Console.WriteLine($"   ✅ Subscription: {created.Id}");
+        Console.WriteLine($"   Expires: {created.ExpirationDateTime}");
 
         return created;
     }
@@ -49,13 +49,13 @@ public class WebhookManager
         var renewed = await _graphClient.Subscriptions[subscriptionId].PatchAsync(patch);
         if (renewed != null)
         {
-            Console.WriteLine($"🔄 Renovada. Nueva expiración: {renewed.ExpirationDateTime}");
+            Console.WriteLine($"🔄 Renewed. New expiration: {renewed.ExpirationDateTime}");
         }
     }
 
     public async Task DeleteSubscriptionAsync(string subscriptionId)
     {
         await _graphClient.Subscriptions[subscriptionId].DeleteAsync();
-        Console.WriteLine($"🗑️ Suscripción {subscriptionId} eliminada");
+        Console.WriteLine($"🗑️ Subscription {subscriptionId} deleted");
     }
 }

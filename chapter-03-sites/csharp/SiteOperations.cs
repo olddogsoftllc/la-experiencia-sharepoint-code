@@ -5,8 +5,8 @@
  * SharePoint Site Operations Example
  * Demonstrates listing, creating, and retrieving SharePoint sites.
  *
- * Usa el módulo de auth compartido (common/SharePointGraphAuth): el cliente de Graph
- * se inyecta por constructor (DI), no se construye dentro de la clase.
+ * Uses the shared auth module (common/SharePointGraphAuth): the Graph client is
+ * injected via constructor (DI), not built inside the class.
  */
 
 using System;
@@ -26,7 +26,7 @@ namespace LaExperiencia.SharePoint.Chapter03.Sites
         private readonly GraphServiceClient _graphClient;
 
         /// <summary>
-        /// Crea una instancia con un cliente de Graph inyectado (DI).
+        /// Creates an instance with an injected Graph client (DI).
         /// </summary>
         public SiteOperations(GraphServiceClient graphClient)
         {
@@ -169,8 +169,8 @@ namespace LaExperiencia.SharePoint.Chapter03.Sites
         }
 
         /// <summary>
-        /// Entry point: construye el cliente de Graph con el módulo común (client secret) y
-        /// ejecuta una demo de solo lectura contra el sitio de pruebas book-test.
+        /// Entry point: builds the Graph client with the common module (client secret) and
+        /// runs a read-only demo against the book-test test site.
         /// </summary>
         public static async Task Main(string[] args)
         {
@@ -179,7 +179,7 @@ namespace LaExperiencia.SharePoint.Chapter03.Sites
                 var graphClient = SharePointGraphClientFactory.CreateFromSecret();
                 var siteOps = new SiteOperations(graphClient);
 
-                // Sitio de pruebas (override por env SHAREPOINT_HOSTNAME / SHAREPOINT_SITE_PATH).
+                // Test site (overridable via SHAREPOINT_HOSTNAME / SHAREPOINT_SITE_PATH env vars).
                 var hostname = Environment.GetEnvironmentVariable("SHAREPOINT_HOSTNAME") ?? "olddogsoft1.sharepoint.com";
                 var sitePath = Environment.GetEnvironmentVariable("SHAREPOINT_SITE_PATH") ?? "book-test";
 

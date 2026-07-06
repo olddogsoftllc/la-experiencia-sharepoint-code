@@ -3,8 +3,8 @@ using System;
 namespace LaExperiencia.SharePoint.Common;
 
 /// <summary>
-/// Lee y valida la configuración de autenticación de Azure AD desde variables de entorno.
-/// Una sola fuente de verdad para todos los ejemplos (C#, y equivalente en Python/JS/PS/Java).
+/// Reads and validates Azure AD authentication settings from environment variables.
+/// A single source of truth for all examples (C#, and equivalent in Python/JS/PS/Java).
 /// </summary>
 public sealed class GraphAuthOptions
 {

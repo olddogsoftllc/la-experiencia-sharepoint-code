@@ -5,7 +5,7 @@ solution to the tenant App Catalog. Copy `.github/workflows/deploy-spfx.yml`
 into any of the `chapter-14-spfx` projects (or any SPFx repo) and configure the
 secrets below.
 
-Covers the book's cap14 "CI/CD para SPFx" and "Bundling, CDN y el flag `--ship`".
+Covers the book's chapter 14 "CI/CD for SPFx" and "Bundling, CDN and the `--ship` flag".
 
 ## What the workflow does
 
@@ -42,4 +42,4 @@ Covers the book's cap14 "CI/CD para SPFx" and "Bundling, CDN y el flag `--ship`"
 - `overwrite: true` re-deploys on every push to `main`. Use `skip-feature-deployment`
   so the solution is tenant-wide immediately (no per-site app add).
 - For multi-tenant or large bundles, add an Azure CDN step (`cdnBasePath` in
-  `config/config.json`) before `gulp bundle --ship` — see cap14 "Bundling, CDN".
+  `config/config.json`) before `gulp bundle --ship` — see chapter 14 "Bundling, CDN".

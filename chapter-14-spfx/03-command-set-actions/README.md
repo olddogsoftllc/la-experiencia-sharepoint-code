@@ -7,7 +7,7 @@ command bar:
 - **Notify count** (`COMMAND_2`) — always visible; reports how many rows are
   selected.
 
-Covers the book's cap14 "Tipos de Extensiones" (Command Set) and shows
+Covers the book's chapter 14 "Types of Extensions" (Command Set) and shows
 `BaseListViewCommandSet`, `tryGetCommand`, `listViewStateChangedEvent`, and
 `raiseOnChange` to toggle command visibility from the selection state.
 

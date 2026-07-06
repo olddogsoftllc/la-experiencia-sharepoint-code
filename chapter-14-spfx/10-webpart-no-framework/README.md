@@ -4,7 +4,7 @@ A **vanilla TypeScript Web Part** with no React and no UI framework. Renders
 straight into `this.domElement`, wires a button listener, and — critically —
 removes that listener in `onDispose` (no framework means *you* own cleanup).
 
-Covers the book's cap14 "Web Part sin React (No Framework)" and demonstrates the
+Covers the book's chapter 14 "Web Part without React (No Framework)" and demonstrates the
 key differences from the React path: no virtual DOM, manual listener teardown,
 and CSS Modules still applying.
 
@@ -12,7 +12,7 @@ and CSS Modules still applying.
 
 - `render()` builds HTML from `pageContext` (site title, user display name) and
   the Property Pane `heading`.
-- A **Recargar** button re-renders the Web Part on click.
+- A **Reload** button re-renders the Web Part on click.
 - `onDispose()` removes the click listener — forgetting this is the classic
   no-framework memory leak.
 - Property Pane with a single `PropertyPaneTextField` for the heading.

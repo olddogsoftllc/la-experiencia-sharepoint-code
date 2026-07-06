@@ -234,7 +234,7 @@ public class DocumentOperations {
     }
 
     /**
-     * Lists the document libraries (drives) of a site. Solo lectura.
+     * Lists the document libraries (drives) of a site. Read-only.
      */
     public void listDrives(String siteId) throws IOException, InterruptedException {
         try {
@@ -272,7 +272,7 @@ public class DocumentOperations {
     }
 
     /**
-     * Entry point: demo de solo lectura contra el sitio de pruebas book-test.
+     * Entry point: read-only demo against the book-test test site.
      */
     public static void main(String[] args) {
         try {
@@ -284,7 +284,7 @@ public class DocumentOperations {
             String sitePath = System.getenv("SHAREPOINT_SITE_PATH");
             if (sitePath == null || sitePath.isBlank()) sitePath = "book-test";
 
-            // Resolver el sitio por path para obtener su ID.
+            // Resolve the site by path to get its ID.
             String token = docOps.getAccessToken();
             String siteUrl = String.format(
                 "https://graph.microsoft.com/v1.0/sites/%s:/sites/%s",

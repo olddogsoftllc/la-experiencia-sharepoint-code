@@ -3,7 +3,7 @@
 A React Web Part that calls a **custom Azure AD-protected API** via
 `AadHttpClient` — the counterpart to `MSGraphClientV3` for your own services.
 
-Covers the book's cap14 "MSGraphClient vs AadHttpClient".
+Covers the book's chapter 14 "MSGraphClient vs AadHttpClient".
 
 ## Structure
 

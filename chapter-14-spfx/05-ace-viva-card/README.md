@@ -3,7 +3,7 @@
 An **Adaptive Card Extension (ACE)** for Viva Connections that shows a count of
 open tickets on the dashboard card and a list of tickets in the QuickView.
 
-Covers the book's cap14 "Adaptive Card Extensions (ACE) en detalle".
+Covers the book's chapter 14 "Adaptive Card Extensions (ACE) in detail".
 
 ## Structure
 

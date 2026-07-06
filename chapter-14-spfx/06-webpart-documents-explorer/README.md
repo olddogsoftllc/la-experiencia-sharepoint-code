@@ -3,8 +3,8 @@
 A React Web Part that lists a site's document libraries (Graph drives) and the
 root items of the first library, rendered with Fluent UI `DocumentCard`.
 
-Connects to the book's cap4 (Documents) and demonstrates the cap14
-"Patrón de Acceso a Graph en SPFx": `MSGraphClientV3` in `onInit`, a
+Connects to the book's chapter 4 (Documents) and demonstrates the chapter 14
+"Graph Access Pattern in SPFx": `MSGraphClientV3` in `onInit`, a
 dependency-injected `GraphService`, the `useGraphQuery` hook, and Fluent UI.
 
 ## Structure

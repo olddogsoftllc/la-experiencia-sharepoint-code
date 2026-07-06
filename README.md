@@ -1,10 +1,10 @@
-# La Experiencia SharePoint — Código de ejemplos
+# La Experiencia SharePoint — Example Code
 
-Repositorio oficial de código del libro **"La Experiencia SharePoint: Desarrollo con Microsoft Graph"**.
+Official code repository for the book **"La Experiencia SharePoint: Desarrollo con Microsoft Graph"**.
 
-> Fuente única de verdad del código de ejemplos. El libro embebe el código inline en los capítulos como extractos didácticos; este repo contiene los archivos **completos, compilables y ejecutables**.
+> Single source of truth for the example code. The book inlines code excerpts within chapters for didactic purposes; this repo contains the **complete, compilable, and runnable** files.
 
-## 📚 Lenguajes
+## 📚 Languages
 
 - **C#** (.NET 8.0+)
 - **PowerShell** (7.4+)
@@ -12,103 +12,103 @@ Repositorio oficial de código del libro **"La Experiencia SharePoint: Desarroll
 - **Python** (3.10+)
 - **Java** (17+)
 
-## 📁 Estructura
+## 📁 Structure
 
 ```
-├── common/                        # Módulo de autenticación compartido (DRY + DI)
+├── common/                        # Shared authentication module (DRY + DI)
 │   ├── SharePointGraphAuth/        #   C# (GraphAuthOptions + SharePointGraphClientFactory)
 │   ├── SharePointGraphAuth.Tests/  #   C# xUnit tests
 │   ├── laexperiencia_sharepoint/   #   Python (get_graph_client / get_access_token) + tests
 │   ├── graphAuth.js                #   JavaScript (getGraphClient / getAccessToken) + Jest tests
 │   ├── SharePointGraph.psm1        #   PowerShell (Connect-SharePointGraph) + Pester tests
 │   └── sharepoint-graph-auth/      #   Java (GraphServiceClientFactory) + JUnit tests
-├── chapter-02-auth/               # Autenticación (interactiva/delegada + certificado + cache)
-├── chapter-03-sites/              # Sitios y bibliotecas
-├── chapter-04-documents/          # Documentos
-├── chapter-05-permissions/        # Permisos y sharing
-├── chapter-06-metadata/           # Metadata y content types (Term Store)
-├── chapter-07-automation/         # Webhooks y delta queries
-├── chapter-14-spfx/               # 12 proyectos SharePoint Framework (SPFx 1.20, Node 18 LTS)
-├── chapter-17-teams/              # Apps de Teams: tab app standalone + bot que lee SharePoint via Graph
-├── la-experiencia-sharepoint.slnx  # Solución C# (dotnet)
-├── pom.xml                         # Reactor Java (Maven multi-module)
+├── chapter-02-auth/               # Authentication (interactive/delegated + certificate + cache)
+├── chapter-03-sites/              # Sites and libraries
+├── chapter-04-documents/          # Documents
+├── chapter-05-permissions/        # Permissions and sharing
+├── chapter-06-metadata/           # Metadata and content types (Term Store)
+├── chapter-07-automation/         # Webhooks and delta queries
+├── chapter-14-spfx/               # 12 SharePoint Framework projects (SPFx 1.20, Node 18 LTS)
+├── chapter-17-teams/              # Teams apps: standalone tab app + bot that reads SharePoint via Graph
+├── la-experiencia-sharepoint.slnx  # C# solution (dotnet)
+├── pom.xml                         # Java reactor (Maven multi-module)
 ├── package.json                    # Node.js (deps + Jest)
-├── requirements.txt                # Python (raíz)
-├── .env.example                    # Plantilla de variables de entorno
-└── smoke-tests.sh                  # Smoke tests en vivo contra el tenant
+├── requirements.txt                # Python (root)
+├── .env.example                    # Environment variables template
+└── smoke-tests.sh                  # Live smoke tests against the tenant
 ```
 
-## 🔐 Variables de entorno
+## 🔐 Environment variables
 
-Copia `.env.example` a `.env` y rellena:
+Copy `.env.example` to `.env` and fill it in:
 
 ```
 TENANT_ID=...
 CLIENT_ID=...
 CLIENT_SECRET=...
-SHAREPOINT_SITE_URL=https://TU-TENANT.sharepoint.com/sites/book-test
+SHAREPOINT_SITE_URL=https://YOUR-TENANT.sharepoint.com/sites/book-test
 SHAREPOINT_SITE_ID=...
 ```
 
-> ⚠️ Nunca commitees `.env` con credenciales reales (ya está en `.gitignore`).
+> ⚠️ Never commit `.env` with real credentials (it is already in `.gitignore`).
 
-## 🚀 Instalación y build
+## 🚀 Installation and build
 
 **C# (.NET):**
 ```bash
-dotnet build la-experiencia-sharepoint.slnx     # 0 errores
-dotnet test common/SharePointGraphAuth.Tests    # 5 tests unitarios
+dotnet build la-experiencia-sharepoint.slnx     # 0 errors
+dotnet test common/SharePointGraphAuth.Tests    # 5 unit tests
 ```
 
 **Java (Maven):**
 ```bash
-mvn clean compile                                 # reactor completo, 0 errores
-mvn -pl common/sharepoint-graph-auth test         # 2 tests JUnit
+mvn clean compile                                 # full reactor, 0 errors
+mvn -pl common/sharepoint-graph-auth test         # 2 JUnit tests
 ```
 
 **JavaScript (Node.js):**
 ```bash
 npm install
-npx jest                                          # 3 tests Jest
+npx jest                                          # 3 Jest tests
 ```
 
 **Python:**
 ```bash
 pip install -r requirements.txt
-pip install -e common                              # módulo de auth compartido
-python -m pytest common/tests/                     # 4 tests pytest
+pip install -e common                              # shared auth module
+python -m pytest common/tests/                     # 4 pytest tests
 ```
 
 **PowerShell:**
 ```powershell
 Install-Module Microsoft.Graph.Authentication -Scope CurrentUser
-pwsh -NoProfile -Command "Invoke-Pester -Path ./common/SharePointGraph.Tests.ps1 -Output Detailed"  # 2 tests Pester
+pwsh -NoProfile -Command "Invoke-Pester -Path ./common/SharePointGraph.Tests.ps1 -Output Detailed"  # 2 Pester tests
 ```
 
-**SPFx (cap14) — requiere Node 18 LTS:**
+**SPFx (cap14) — requires Node 18 LTS:**
 ```bash
 nvm use 18
-cd chapter-14-spfx/01-webpart-hello-graph   # cualquier proyecto
+cd chapter-14-spfx/01-webpart-hello-graph   # any project
 npm install
-gulp build                                   # 0 warnings, 0 TS errors (los 11 proyectos)
+gulp build                                   # 0 warnings, 0 TS errors (all 11 projects)
 gulp bundle --ship && gulp package-solution --ship   # -> sharepoint/solution/*.sppkg
 ```
-Los 11 proyectos SPFx de `chapter-14-spfx/` construyen verdes (0 warnings). Ver
-`chapter-14-spfx/README.md` para el índice de los 12 ejemplos y los permisos Graph
-que cada uno declara.
+The 11 SPFx projects in `chapter-14-spfx/` build green (0 warnings). See
+`chapter-14-spfx/README.md` for the index of the 12 examples and the Graph
+permissions each one declares.
 
 **Teams (cap17):**
 ```bash
 cd chapter-17-teams/02-bot-sharepoint
 npm install
-npm test          # 4 tests Jest (graphAuth, sin red)
-npm run build     # tsc, 0 errores
+npm test          # 4 Jest tests (graphAuth, no network)
+npm run build     # tsc, 0 errors
 ```
-`01-tab-app-sharepoint` es un package de manifest + iconos (sin build; `bash package.sh` genera el .zip). `02-bot-sharepoint` es un bot Node (botbuilder + restify) que responde `sites` / `docs <site>` leyendo Graph. Ver los README de cada uno para el ciclo de vida completo (Entra ID, Azure Bot, ngrok, sideload).
+`01-tab-app-sharepoint` is a manifest + icons package (no build; `bash package.sh` generates the .zip). `02-bot-sharepoint` is a Node bot (botbuilder + restify) that responds to `sites` / `docs <site>` by reading Graph. See each project's README for the full lifecycle (Entra ID, Azure Bot, ngrok, sideload).
 
-## ▶️ Ejecutar los ejemplos
+## ▶️ Run the examples
 
-Cada capítulo tiene un `main`/`Main` de **solo lectura** que opera contra el sitio de pruebas (resuelto por path, por defecto `olddogsoft1.sharepoint.com/sites/book-test` — sobreescribible con `SHAREPOINT_HOSTNAME`/`SHAREPOINT_SITE_PATH`).
+Each chapter has a read-only `main`/`Main` that operates against the test site (resolved by path, default `olddogsoft1.sharepoint.com/sites/book-test` — overridable via `SHAREPOINT_HOSTNAME`/`SHAREPOINT_SITE_PATH`).
 
 ```bash
 # C#
@@ -124,31 +124,31 @@ mvn -q install -DskipTests
 mvn -q -pl chapter-03-sites/java exec:java -Dexec.mainClass=com.sharepointexperience.chapter03.SiteOperations
 ```
 
-## 🧪 Tests automatizados
+## 🧪 Automated tests
 
 ```bash
-bash smoke-tests.sh        # 24 smoke tests en vivo contra el tenant (C#/Py/JS/PS/Java)
+bash smoke-tests.sh        # 24 live smoke tests against the tenant (C#/Py/JS/PS/Java)
 ```
 
-Suite total: **57 pruebas** (33 unit sin red + 24 smoke en vivo); **57/57 validadas en verde** con mínimo privilegio (`Sites.Selected`). Ver `PRUEBAS-AUTOMATIZADAS.md`.
+Total suite: **57 tests** (33 network-less unit + 24 live smoke); **57/57 validated green** with least privilege (`Sites.Selected`). See `PRUEBAS-AUTOMATIZADAS.md`.
 
-## 📖 Notas
+## 📖 Notes
 
-- La autenticación **app-only con client secret** (Microsoft Graph) es el patrón soportado para automatización no interactiva. Los ejemplos del cap. 2 usan auth **interactiva/delegada** (navegador) para enseñar los flujos.
-- El módulo `common/` centraliza la auth (DRY); los ejemplos reciben el cliente/token por **inyección de dependencias**.
-- `complete-workflow/` (proyecto integrador) es un stub pendiente de portar.
+- **App-only with client secret** authentication (Microsoft Graph) is the supported pattern for non-interactive automation. The chapter 2 examples use **interactive/delegated** auth (browser) to teach the flows.
+- The `common/` module centralizes auth (DRY); examples receive the client/token via **dependency injection**.
+- `complete-workflow/` (integrating project) is a stub pending porting.
 
-## 📄 Licencia
+## 📄 License
 
-MIT License (código). El contenido del libro es CC BY-NC-SA 4.0.
+MIT License (code). The book content is CC BY-NC-SA 4.0.
 
-## 💝 Apoya el proyecto
+## 💝 Support the project
 
-Este código es gratuito y open source. Si te ayuda, puedes apoyar de varias maneras:
+This code is free and open source. If it helps you, you can support it in several ways:
 
-- **GitHub Sponsors** — pulsa el botón **Sponsor** arriba (requiere que el autor tenga el perfil de Sponsors habilitado en `olddogsoftllc`).
-- **Comprar el libro** — *La Experiencia SharePoint* (4 volúmenes) en Leanpub (enlace próximamente; mientras tanto en [olddogsoft.com/blog](https://www.olddogsoft.com/blog)).
-- **PayPal / Ko-fi** — vías one-click configuradas vía `.github/FUNDING.yml` (ver ese archivo para activarlas).
-- **Compartir el repo** — una estrella ⭐ y compartir con tu equipo también ayudan.
+- **GitHub Sponsors** — click the **Sponsor** button above (requires the author to have the Sponsors profile enabled under `olddogsoftllc`).
+- **Buy the book** — *La Experiencia SharePoint* (4 volumes) on Leanpub (link coming soon; in the meantime at [olddogsoft.com/blog](https://www.olddogsoft.com/blog)).
+- **PayPal / Ko-fi** — one-click avenues configured via `.github/FUNDING.yml` (see that file to enable them).
+- **Share the repo** — a star ⭐ and sharing with your team also help.
 
-> El código siempre será gratis y MIT. El libro (contenido editorial) es de pago para sostener el proyecto. Tu apoyo financia más ejemplos, validación en vivo y mantenimiento frente a los cambios de Microsoft Graph.
+> The code will always be free and MIT. The book (editorial content) is paid to sustain the project. Your support funds more examples, live validation, and maintenance against Microsoft Graph changes.
