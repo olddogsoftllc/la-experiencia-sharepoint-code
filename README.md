@@ -130,7 +130,7 @@ mvn -q -pl chapter-03-sites/java exec:java -Dexec.mainClass=com.sharepointexperi
 bash smoke-tests.sh        # 24 smoke tests en vivo contra el tenant (C#/Py/JS/PS/Java)
 ```
 
-Suite total: **40 pruebas** (16 unit sin red + 24 smoke en vivo); **40/40 validadas en verde** con mínimo privilegio (`Sites.Selected`). Ver `PRUEBAS-AUTOMATIZADAS.md`.
+Suite total: **57 pruebas** (33 unit sin red + 24 smoke en vivo); **57/57 validadas en verde** con mínimo privilegio (`Sites.Selected`). Ver `PRUEBAS-AUTOMATIZADAS.md`.
 
 ## 📖 Notas
 

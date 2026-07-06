@@ -22,7 +22,7 @@ $script:CacheExpiry = $null
 $script:TokenLifetimeMinutes = 55  # Token typically valid for 60 minutes
 
 function Get-CachedAccessToken {
-    <cmdletbinding()
+    [CmdletBinding()]
     param()
 
     try {
@@ -67,7 +67,7 @@ function Get-CachedAccessToken {
 }
 
 function Clear-TokenCache {
-    <cmdletbinding()
+    [CmdletBinding()]
     param()
 
     $script:TokenCache.Clear()
@@ -76,7 +76,7 @@ function Clear-TokenCache {
 }
 
 function Get-CacheStatus {
-    <cmdletbinding()
+    [CmdletBinding()]
     param()
 
     $status = @{
@@ -93,7 +93,7 @@ function Get-CacheStatus {
 }
 
 function Invoke-GraphRequestWithCache {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$Uri,

@@ -1,0 +1,27 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.documentsExplorerWebPart {
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+  &.dark {
+    background-color: "[theme:bodyBackground, default: #2d2d2d]";
+  }
+}
+
+.welcome {
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0.5em 0;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+}

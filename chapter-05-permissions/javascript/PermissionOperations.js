@@ -12,61 +12,50 @@
  */
 
 const axios = require('axios');
-const qs = require('querystring');
+const { getAccessToken } = require('la-experiencia-sharepoint-code/graphAuth');
+
+const GRAPH_BASE = 'https://graph.microsoft.com/v1.0';
 
 /**
- * SharePoint Permission Operations class
+ * SharePoint Permission Operations class. El access token se inyecta por constructor (DI).
  */
 class PermissionOperations {
-    constructor() {
-        this.tenantId = process.env.TENANT_ID;
-        this.clientId = process.env.CLIENT_ID;
-        this.clientSecret = process.env.CLIENT_SECRET;
-        this.accessToken = null;
-
-        this.validateConfig();
+    /** @param {string} accessToken Bearer token for Microsoft Graph (inyectado). */
+    constructor(accessToken) {
+        if (!accessToken) throw new Error('Se requiere un access token para PermissionOperations.');
+        this.accessToken = accessToken;
     }
 
-    validateConfig() {
-        const required = ['TENANT_ID', 'CLIENT_ID', 'CLIENT_SECRET'];
-        const missing = required.filter(key => !process.env[key]);
-
-        if (missing.length > 0) {
-            throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
-        }
-    }
-
-    /**
-     * Gets access token for Microsoft Graph
-     */
-    async getAccessToken() {
-        if (this.accessToken) return this.accessToken;
-
-        const tokenEndpoint = `https://login.microsoftonline.com/${this.tenantId}/oauth2/v2.0/token`;
-        const requestBody = {
-            client_id: this.clientId,
-            client_secret: this.clientSecret,
-            scope: 'https://graph.microsoft.com/.default',
-            grant_type: 'client_credentials'
-        };
-
-        const response = await axios.post(tokenEndpoint, qs.stringify(requestBody), {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        });
-
-        this.accessToken = response.data.access_token;
-        return this.accessToken;
-    }
-
-    /**
-     * Gets authenticated headers
-     */
+    /** @returns {Promise<{Authorization: string, 'Content-Type': string}>} */
     async getHeaders() {
-        const token = await this.getAccessToken();
         return {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            'Authorization': `Bearer ${this.accessToken}`,
+            'Content-Type': 'application/json',
         };
+    }
+
+    /** Lists the permissions of a site. Solo lectura. */
+    async listSitePermissions(siteId) {
+        try {
+            console.log(`Listing permissions of site: ${siteId}`);
+            const headers = await this.getHeaders();
+            const response = await axios.get(`${GRAPH_BASE}/sites/${siteId}/permissions`, { headers });
+            const permissions = response.data.value;
+            console.log(`Found ${permissions.length} site permissions:`);
+            console.log('-'.repeat(80));
+            permissions.forEach((permission) => {
+                console.log(`Permission ID: ${permission.id}`);
+                console.log(`  Roles: ${(permission.roles || []).join(', ')}`);
+                (permission.grantedToIdentities || []).forEach((identity) => {
+                    console.log(`  Granted To: ${identity.user?.displayName}`);
+                });
+                console.log('-'.repeat(80));
+            });
+            return permissions;
+        } catch (error) {
+            console.error('Error listing site permissions:', error.response?.data?.error?.message || error.message);
+            throw error;
+        }
     }
 
     /**
@@ -230,11 +219,25 @@ class PermissionOperations {
 async function main() {
     try {
         console.log('=== SharePoint Permission Operations Example ===\n');
+        const token = await getAccessToken();
+        const permOps = new PermissionOperations(token);
 
-        const permOps = new PermissionOperations();
+        const hostname = process.env.SHAREPOINT_HOSTNAME || 'olddogsoft1.sharepoint.com';
+        const sitePath = process.env.SHAREPOINT_SITE_PATH || 'book-test';
 
-        console.log('Permission operations class initialized successfully!');
-        console.log('Use the methods to manage sharing links and permissions.');
+        // Resolver el sitio por path para obtener su ID.
+        const siteUrl = `${GRAPH_BASE}/sites/${encodeURIComponent(hostname)}:/sites/${encodeURIComponent(sitePath)}`;
+        const siteResp = await axios.get(siteUrl, { headers: await permOps.getHeaders() });
+        const siteId = siteResp.data.id;
+
+        // Listar drives del sitio y tomar el primero; listar permisos del item root.
+        // (Listar /sites/{id}/permissions requiere admin; los permisos de item del drive
+        //  están cubiertos por el grant Sites.Selected.)
+        const drivesResp = await axios.get(`${GRAPH_BASE}/sites/${siteId}/drives`, { headers: await permOps.getHeaders() });
+        const firstDrive = drivesResp.data.value[0];
+        await permOps.listPermissions(siteId, firstDrive.id, 'root');
+
+        console.log('\nPermission operations completed successfully!');
     } catch (error) {
         console.error('Error:', error.message);
         process.exit(1);

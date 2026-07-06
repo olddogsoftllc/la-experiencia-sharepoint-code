@@ -18,7 +18,7 @@ param()
 #Requires -Modules MSAL.PS
 
 function Get-CertificateFromStore {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$Thumbprint
@@ -49,7 +49,7 @@ function Get-CertificateFromStore {
 }
 
 function Get-CertificateFromFile {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$Path,
@@ -81,7 +81,7 @@ function Get-CertificateFromFile {
 }
 
 function Test-Certificate {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [System.Security.Cryptography.X509Certificates.X509Certificate2]$Certificate
@@ -121,7 +121,7 @@ function Test-Certificate {
 }
 
 function Get-GraphTokenWithCertificate {
-    <cmdletbinding()
+    [CmdletBinding()]
     param()
 
     try {

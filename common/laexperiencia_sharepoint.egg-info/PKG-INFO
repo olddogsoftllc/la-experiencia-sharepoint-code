@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: laexperiencia-sharepoint
+Version: 1.0.0
+Summary: Módulo de autenticación compartido para los ejemplos de La Experiencia SharePoint
+Requires-Python: >=3.10
+Requires-Dist: msgraph-sdk>=1.0.0
+Requires-Dist: azure-identity>=1.15.0

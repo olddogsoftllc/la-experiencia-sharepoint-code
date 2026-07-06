@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.laexperiencia.sharepoint</groupId>
@@ -10,45 +10,90 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <name>La Experiencia SharePoint - Código</name>
-    <description>Código de ejemplos para el libro La Experiencia SharePoint</description>
+    <name>La Experiencia SharePoint — Código de ejemplo (parent)</name>
+    <description>Reactor padre de los ejemplos Java del libro La Experiencia SharePoint.</description>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <microsoft-graph.version>6.0.0</microsoft-graph.version>
-        <azure-identity.version>1.11.0</azure-identity.version>
+        <microsoft-graph.version>6.1.0</microsoft-graph.version>
+        <microsoft-graph-core.version>3.1.0</microsoft-graph-core.version>
+        <kiota-abstractions.version>1.0.0</kiota-abstractions.version>
+        <kiota-auth-azure.version>1.0.0</kiota-auth-azure.version>
+        <azure-identity.version>1.11.4</azure-identity.version>
+        <gson.version>2.11.0</gson.version>
     </properties>
 
     <modules>
-        <module>capitulo-02-auth</module>
-        <module>capitulo-03-sitios</module>
-        <module>capitulo-04-documentos</module>
-        <module>capitulo-05-permisos</module>
-        <module>capitulo-06-metadata</module>
-        <module>capitulo-07-automatizacion</module>
-        <module>proyecto-integrador</module>
+        <module>common/sharepoint-graph-auth</module>
+        <module>chapter-02-auth/java</module>
+        <module>chapter-03-sites/java</module>
+        <module>chapter-04-documents/java</module>
+        <module>chapter-05-permissions/java</module>
+        <module>chapter-06-metadata/java</module>
+        <module>chapter-07-automation/java</module>
     </modules>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.microsoft.graph</groupId>
-            <artifactId>msgraph-sdk-java</artifactId>
-            <version>${microsoft-graph.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-identity</artifactId>
-            <version>${azure-identity.version}</version>
-        </dependency>
-    </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.microsoft.graph</groupId>
+                <artifactId>microsoft-graph</artifactId>
+                <version>${microsoft-graph.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.microsoft.graph</groupId>
+                <artifactId>microsoft-graph-core</artifactId>
+                <version>${microsoft-graph-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.microsoft.kiota</groupId>
+                <artifactId>microsoft-kiota-abstractions</artifactId>
+                <version>${kiota-abstractions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.microsoft.kiota</groupId>
+                <artifactId>microsoft-kiota-authentication-azure</artifactId>
+                <version>${kiota-auth-azure.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-identity</artifactId>
+                <version>${azure-identity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.laexperiencia.sharepoint</groupId>
+                <artifactId>sharepoint-graph-auth</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>5.10.2</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
-    <repositories>
-        <repository>
-            <id>maven-central</id>
-            <name>Maven Central</name>
-            <url>https://repo.maven.apache.org/maven2/</url>
-        </repository>
-    </repositories>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.13.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

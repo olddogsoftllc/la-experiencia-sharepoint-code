@@ -1,0 +1,48 @@
+{
+  "schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "weight": "Bolder",
+      "text": "Tickets",
+      "size": "Large"
+    },
+    {
+      "type": "Container",
+      "$data": "${tickets}",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${title}",
+                  "wrap": true
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${status}",
+                  "horizontalAlignment": "Right",
+                  "isSubtle": true
+                }
+              ]
+            }
+          ],
+          "separator": true
+        }
+      ]
+    }
+  ]
+}

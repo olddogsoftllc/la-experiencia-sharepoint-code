@@ -1,0 +1,6 @@
+# Jest test files (run by jest, not part of the SPFx bundle/lint)
+**/*.test.ts
+**/*.test.tsx
+# Jest config (Node, not SPFx)
+jest.config.js
+tsconfig.test.json

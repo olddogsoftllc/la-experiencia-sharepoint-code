@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "laexperiencia-sharepoint"
+version = "1.0.0"
+description = "Módulo de autenticación compartido para los ejemplos de La Experiencia SharePoint"
+requires-python = ">=3.10"
+dependencies = [
+    "msgraph-sdk>=1.0.0",
+    "azure-identity>=1.15.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["laexperiencia_sharepoint*"]

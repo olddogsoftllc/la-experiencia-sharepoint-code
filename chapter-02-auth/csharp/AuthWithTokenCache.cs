@@ -1,6 +1,7 @@
 using Azure.Identity;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.Extensions.Msal;
 
 namespace Chapter02Auth
 {
@@ -14,9 +15,9 @@ namespace Chapter02Auth
         {
             Console.WriteLine("=== Chapter 2: Authentication with Token Cache ===\n");
 
-            string tenantId = Environment.GetEnvironmentVariable("SP_TENANT_ID")!;
-            string clientId = Environment.GetEnvironmentVariable("SP_CLIENT_ID")!;
-            string clientSecret = Environment.GetEnvironmentVariable("SP_CLIENT_SECRET")!;
+            string tenantId = Environment.GetEnvironmentVariable("TENANT_ID")!;
+            string clientId = Environment.GetEnvironmentVariable("CLIENT_ID")!;
+            string clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET")!;
 
             if (string.IsNullOrEmpty(tenantId) || string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
             {

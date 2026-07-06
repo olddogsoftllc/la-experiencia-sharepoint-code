@@ -14,14 +14,14 @@ namespace Chapter02Auth
             Console.WriteLine("=== Chapter 2: Authentication ===\n");
 
             // Configuration from environment variables
-            string tenantId = Environment.GetEnvironmentVariable("SP_TENANT_ID")!;
-            string clientId = Environment.GetEnvironmentVariable("SP_CLIENT_ID")!;
-            string clientSecret = Environment.GetEnvironmentVariable("SP_CLIENT_SECRET")!;
+            string tenantId = Environment.GetEnvironmentVariable("TENANT_ID")!;
+            string clientId = Environment.GetEnvironmentVariable("CLIENT_ID")!;
+            string clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET")!;
 
             if (string.IsNullOrEmpty(tenantId) || string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
             {
                 Console.WriteLine("Error: Missing environment variables.");
-                Console.WriteLine("Make sure to set: SP_TENANT_ID, SP_CLIENT_ID, SP_CLIENT_SECRET");
+                Console.WriteLine("Make sure to set: TENANT_ID, CLIENT_ID, CLIENT_SECRET");
                 return;
             }
 

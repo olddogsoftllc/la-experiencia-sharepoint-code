@@ -1,0 +1,32 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.teamsEnabledWebPart {
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+  &.dark {
+    background-color: "[theme:bodyBackground, default: #2d2d2d]";
+  }
+}
+
+.welcome {
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.note {
+  font-size: 12px;
+  color: "[theme:bodySubtext, default: #605e5c]";
+  color: var(--bodySubtext);
+
+  code {
+    background-color: "[theme:neutralLighter, default:#f3f2f1]";
+    background-color: var(--neutralLighter);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+}

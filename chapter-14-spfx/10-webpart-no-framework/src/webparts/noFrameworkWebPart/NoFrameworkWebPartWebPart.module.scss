@@ -1,0 +1,29 @@
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
+
+.noFrameworkWebPart {
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+  &.dark {
+    background-color: "[theme:bodyBackground, default: #2d2d2d]";
+  }
+}
+
+.btn {
+  background-color: "[theme:themePrimary, default:#0078d4]";
+  color: #ffffff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 8px;
+
+  &:hover {
+    background-color: "[theme:themeDark, default:#005a9e]";
+  }
+}

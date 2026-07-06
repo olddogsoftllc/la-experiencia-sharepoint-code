@@ -1,0 +1,25 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "whichFolder": "subdir",
+    "solutionName": "documents-explorer",
+    "environment": "spo",
+    "componentType": "webpart",
+    "template": "react",
+    "componentName": "DocumentsExplorerWebPart",
+    "componentDescription": "Explorador de bibliotecas y documentos via Graph con Fluent UI DocumentCard",
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.8",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.24.0"
+    },
+    "version": "1.20.0",
+    "libraryName": "documents-explorer",
+    "libraryId": "c97dd0c6-6ed3-45a3-b61d-4f9ea59a0b61",
+    "packageManager": "npm",
+    "solutionShortDescription": "documents-explorer description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false
+  }
+}

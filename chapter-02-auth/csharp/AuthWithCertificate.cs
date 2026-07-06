@@ -22,9 +22,9 @@ namespace SharePointExperience.Chapter02
     {
         private readonly string _tenantId;
         private readonly string _clientId;
-        private readonly string _certificateThumbprint;
-        private readonly string _certificatePath;
-        private readonly string _certificatePassword;
+        private readonly string? _certificateThumbprint;
+        private readonly string? _certificatePath;
+        private readonly string? _certificatePassword;
 
         /// <summary>
         /// Initializes a new instance of AuthWithCertificate

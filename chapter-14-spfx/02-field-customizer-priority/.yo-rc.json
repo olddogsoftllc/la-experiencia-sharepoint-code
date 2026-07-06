@@ -1,0 +1,26 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "whichFolder": "subdir",
+    "solutionName": "field-priority",
+    "environment": "spo",
+    "componentType": "extension",
+    "extensionType": "FieldCustomizer",
+    "template": "none",
+    "componentName": "PriorityFieldCustomizer",
+    "componentDescription": "Field Customizer que colorea celdas segun prioridad",
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.8",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.24.0"
+    },
+    "version": "1.20.0",
+    "libraryName": "field-priority",
+    "libraryId": "aea5ad22-e775-4d9b-b69a-c06996204171",
+    "packageManager": "npm",
+    "solutionShortDescription": "field-priority description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false
+  }
+}

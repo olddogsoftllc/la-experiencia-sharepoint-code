@@ -1,0 +1,25 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.helloGraphWebPart {
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+  &.dark {
+    background-color: "[theme:bodyBackground, default: #2d2d2d]";
+  }
+}
+
+.welcome {
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.subtitle {
+  color: "[theme:bodySubtext, default: #605e5c]";
+  color: var(--bodySubtext);
+  font-size: 14px;
+}

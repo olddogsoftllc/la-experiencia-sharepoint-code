@@ -3,45 +3,37 @@
  * Chapter 03: Sites
  *
  * SharePoint Site Operations Example
- * Demonstrates listing, creating, and retrieving SharePoint sites
+ * Demonstrates listing, creating, and retrieving SharePoint sites.
+ *
+ * Usa el módulo de auth compartido (common/SharePointGraphAuth): el cliente de Graph
+ * se inyecta por constructor (DI), no se construye dentro de la clase.
  */
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Azure.Identity;
+using LaExperiencia.SharePoint.Common;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
 
-namespace SharePointExperience.Chapter03
+namespace LaExperiencia.SharePoint.Chapter03.Sites
 {
     /// <summary>
-    /// Example class demonstrating SharePoint site operations
+    /// Example class demonstrating SharePoint site operations.
     /// </summary>
     public class SiteOperations
     {
         private readonly GraphServiceClient _graphClient;
 
         /// <summary>
-        /// Initializes a new instance of SiteOperations
+        /// Crea una instancia con un cliente de Graph inyectado (DI).
         /// </summary>
-        public SiteOperations()
+        public SiteOperations(GraphServiceClient graphClient)
         {
-            string tenantId = Environment.GetEnvironmentVariable("TENANT_ID")
-                ?? throw new ArgumentException("TENANT_ID environment variable is required");
-            string clientId = Environment.GetEnvironmentVariable("CLIENT_ID")
-                ?? throw new ArgumentException("CLIENT_ID environment variable is required");
-            string clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET")
-                ?? throw new ArgumentException("CLIENT_SECRET environment variable is required");
-
-            var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
-            _graphClient = new GraphServiceClient(credential);
+            _graphClient = graphClient ?? throw new ArgumentNullException(nameof(graphClient));
         }
 
-        /// <summary>
-        /// Lists all sites in the organization
-        /// </summary>
-        /// <returns>List of sites</returns>
+        /// <summary>Lists all sites in the organization.</summary>
         public async Task ListSitesAsync()
         {
             try
@@ -55,10 +47,9 @@ namespace SharePointExperience.Chapter03
 
                 foreach (var site in sites?.Value ?? new List<Site>())
                 {
-                    Console.WriteLine($"Name: {site.Name}");
+                    Console.WriteLine($"Display Name: {site.DisplayName}");
                     Console.WriteLine($"  ID: {site.Id}");
                     Console.WriteLine($"  Web URL: {site.WebUrl}");
-                    Console.WriteLine($"  Display Name: {site.DisplayName}");
                     Console.WriteLine(new string('-', 80));
                 }
             }
@@ -69,24 +60,19 @@ namespace SharePointExperience.Chapter03
             }
         }
 
-        /// <summary>
-        /// Gets a specific site by hostname and site path
-        /// </summary>
-        /// <param name="hostname">The hostname of the site (e.g., contoso.sharepoint.com)</param>
-        /// <param name="sitePath">The site path (e.g., sites/marketing)</param>
-        /// <returns>The site object</returns>
-        public async Task<Site> GetSiteAsync(string hostname, string sitePath)
+        /// <summary>Gets a specific site by hostname and site path (e.g. contoso.sharepoint.com / book-test).</summary>
+        public async Task<Site?> GetSiteAsync(string hostname, string sitePath)
         {
             try
             {
-                Console.WriteLine($"Fetching site: {hostname}/{sitePath}");
+                Console.WriteLine($"Fetching site: {hostname}/sites/{sitePath}");
 
                 var site = await _graphClient.Sites[$"{hostname}:/sites/{sitePath}"].GetAsync();
 
                 if (site != null)
                 {
-                    Console.WriteLine($"Site found:");
-                    Console.WriteLine($"  Name: {site.Name}");
+                    Console.WriteLine("Site found:");
+                    Console.WriteLine($"  Display Name: {site.DisplayName}");
                     Console.WriteLine($"  ID: {site.Id}");
                     Console.WriteLine($"  Web URL: {site.WebUrl}");
                     Console.WriteLine($"  Description: {site.Description}");
@@ -101,12 +87,8 @@ namespace SharePointExperience.Chapter03
             }
         }
 
-        /// <summary>
-        /// Gets site by its unique identifier
-        /// </summary>
-        /// <param name="siteId">The site ID</param>
-        /// <returns>The site object</returns>
-        public async Task<Site> GetSiteByIdAsync(string siteId)
+        /// <summary>Gets site by its unique identifier.</summary>
+        public async Task<Site?> GetSiteByIdAsync(string siteId)
         {
             try
             {
@@ -116,8 +98,8 @@ namespace SharePointExperience.Chapter03
 
                 if (site != null)
                 {
-                    Console.WriteLine($"Site found:");
-                    Console.WriteLine($"  Name: {site.Name}");
+                    Console.WriteLine("Site found:");
+                    Console.WriteLine($"  Display Name: {site.DisplayName}");
                     Console.WriteLine($"  Web URL: {site.WebUrl}");
                 }
 
@@ -130,17 +112,13 @@ namespace SharePointExperience.Chapter03
             }
         }
 
-        /// <summary>
-        /// Searches for sites by keyword
-        /// </summary>
-        /// <param name="keyword">Search keyword</param>
+        /// <summary>Searches for sites by keyword.</summary>
         public async Task SearchSitesAsync(string keyword)
         {
             try
             {
                 Console.WriteLine($"Searching for sites with keyword: '{keyword}'");
 
-                // Note: Site search uses the search query parameter
                 var sites = await _graphClient.Sites.GetAsync(requestConfiguration =>
                 {
                     requestConfiguration.QueryParameters.Search = keyword;
@@ -151,7 +129,7 @@ namespace SharePointExperience.Chapter03
 
                 foreach (var site in sites?.Value ?? new List<Site>())
                 {
-                    Console.WriteLine($"Name: {site.Name}");
+                    Console.WriteLine($"Display Name: {site.DisplayName}");
                     Console.WriteLine($"  Web URL: {site.WebUrl}");
                     Console.WriteLine($"  Description: {site.Description}");
                     Console.WriteLine(new string('-', 80));
@@ -164,11 +142,8 @@ namespace SharePointExperience.Chapter03
             }
         }
 
-        /// <summary>
-        /// Gets the root site of the organization
-        /// </summary>
-        /// <returns>The root site</returns>
-        public async Task<Site> GetRootSiteAsync()
+        /// <summary>Gets the root site of the organization.</summary>
+        public async Task<Site?> GetRootSiteAsync()
         {
             try
             {
@@ -178,8 +153,8 @@ namespace SharePointExperience.Chapter03
 
                 if (site != null)
                 {
-                    Console.WriteLine($"Root site:");
-                    Console.WriteLine($"  Name: {site.Name}");
+                    Console.WriteLine("Root site:");
+                    Console.WriteLine($"  Display Name: {site.DisplayName}");
                     Console.WriteLine($"  ID: {site.Id}");
                     Console.WriteLine($"  Web URL: {site.WebUrl}");
                 }
@@ -194,18 +169,21 @@ namespace SharePointExperience.Chapter03
         }
 
         /// <summary>
-        /// Entry point for the example
+        /// Entry point: construye el cliente de Graph con el módulo común (client secret) y
+        /// ejecuta una demo de solo lectura contra el sitio de pruebas book-test.
         /// </summary>
         public static async Task Main(string[] args)
         {
             try
             {
-                var siteOps = new SiteOperations();
+                var graphClient = SharePointGraphClientFactory.CreateFromSecret();
+                var siteOps = new SiteOperations(graphClient);
 
-                // Get root site
-                await siteOps.GetRootSiteAsync();
+                // Sitio de pruebas (override por env SHAREPOINT_HOSTNAME / SHAREPOINT_SITE_PATH).
+                var hostname = Environment.GetEnvironmentVariable("SHAREPOINT_HOSTNAME") ?? "olddogsoft1.sharepoint.com";
+                var sitePath = Environment.GetEnvironmentVariable("SHAREPOINT_SITE_PATH") ?? "book-test";
 
-                // List all sites
+                await siteOps.GetSiteAsync(hostname, sitePath);
                 await siteOps.ListSitesAsync();
 
                 Console.WriteLine("\nSite operations completed successfully!");

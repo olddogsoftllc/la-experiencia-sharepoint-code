@@ -9,34 +9,26 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Azure.Identity;
+using LaExperiencia.SharePoint.Common;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
 using Microsoft.Graph.Drives.Item.Items.Item.CreateLink;
+using Microsoft.Graph.Drives.Item.Items.Item.Invite;
 
-namespace SharePointExperience.Chapter05
+namespace LaExperiencia.SharePoint.Chapter05.Permissions
 {
     /// <summary>
-    /// Example class demonstrating SharePoint permission operations
+    /// Example class demonstrating SharePoint permission operations.
+    /// El cliente de Graph se inyecta por constructor (DI) desde el módulo común.
     /// </summary>
     public class PermissionOperations
     {
         private readonly GraphServiceClient _graphClient;
 
-        /// <summary>
-        /// Initializes a new instance of PermissionOperations
-        /// </summary>
-        public PermissionOperations()
+        /// <summary>Crea una instancia con un cliente de Graph inyectado (DI).</summary>
+        public PermissionOperations(GraphServiceClient graphClient)
         {
-            string tenantId = Environment.GetEnvironmentVariable("TENANT_ID")
-                ?? throw new ArgumentException("TENANT_ID environment variable is required");
-            string clientId = Environment.GetEnvironmentVariable("CLIENT_ID")
-                ?? throw new ArgumentException("CLIENT_ID environment variable is required");
-            string clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET")
-                ?? throw new ArgumentException("CLIENT_SECRET environment variable is required");
-
-            var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
-            _graphClient = new GraphServiceClient(credential);
+            _graphClient = graphClient ?? throw new ArgumentNullException(nameof(graphClient));
         }
 
         /// <summary>
@@ -47,7 +39,7 @@ namespace SharePointExperience.Chapter05
         /// <param name="itemId">The item ID</param>
         /// <param name="linkType">The link type (view or edit)</param>
         /// <returns>The created permission with sharing link</returns>
-        public async Task<Permission> CreateAnonymousLinkAsync(
+        public async Task<Permission?> CreateAnonymousLinkAsync(
             string siteId,
             string driveId,
             string itemId,
@@ -64,7 +56,6 @@ namespace SharePointExperience.Chapter05
                 };
 
                 var permission = await _graphClient
-                    .Sites[siteId]
                     .Drives[driveId]
                     .Items[itemId]
                     .CreateLink
@@ -92,7 +83,7 @@ namespace SharePointExperience.Chapter05
         /// <param name="itemId">The item ID</param>
         /// <param name="linkType">The link type (view or edit)</param>
         /// <returns>The created permission with sharing link</returns>
-        public async Task<Permission> CreateOrganizationLinkAsync(
+        public async Task<Permission?> CreateOrganizationLinkAsync(
             string siteId,
             string driveId,
             string itemId,
@@ -109,7 +100,6 @@ namespace SharePointExperience.Chapter05
                 };
 
                 var permission = await _graphClient
-                    .Sites[siteId]
                     .Drives[driveId]
                     .Items[itemId]
                     .CreateLink
@@ -138,7 +128,7 @@ namespace SharePointExperience.Chapter05
         /// <param name="userEmail">The email address of the user</param>
         /// <param name="role">The role (write or read)</param>
         /// <returns>The created permission</returns>
-        public async Task<Permission> GrantAccessToUserAsync(
+        public async Task<Permission?> GrantAccessToUserAsync(
             string siteId,
             string driveId,
             string itemId,
@@ -159,21 +149,20 @@ namespace SharePointExperience.Chapter05
                         }
                     },
                     Roles = new List<string> { role },
-                    SendNotification = true,
+                    SendInvitation = true,
                     Message = "You have been granted access to this document."
                 };
 
                 var permissions = await _graphClient
-                    .Sites[siteId]
                     .Drives[driveId]
                     .Items[itemId]
                     .Invite
-                    .PostAsync(requestBody);
+                    .PostAsInvitePostResponseAsync(requestBody);
 
                 Console.WriteLine("Access granted successfully:");
-                if (permissions?.Value > 0)
+                if (permissions?.Value is { Count: > 0 } perms)
                 {
-                    var permission = permissions.Value[0];
+                    var permission = perms[0];
                     Console.WriteLine($"  Permission ID: {permission.Id}");
                     Console.WriteLine($"  Roles: {string.Join(", ", permission.Roles ?? new List<string>())}");
                 }
@@ -200,7 +189,6 @@ namespace SharePointExperience.Chapter05
                 Console.WriteLine($"Listing permissions for item: {itemId}");
 
                 var permissions = await _graphClient
-                    .Sites[siteId]
                     .Drives[driveId]
                     .Items[itemId]
                     .Permissions
@@ -223,14 +211,14 @@ namespace SharePointExperience.Chapter05
 
                     if (permission.GrantedTo?.User != null)
                     {
-                        Console.WriteLine($"  Granted To: {permission.GrantedTo.User.DisplayName} ({permission.GrantedTo.User.Email})");
+                        Console.WriteLine($"  Granted To: {permission.GrantedTo.User.DisplayName} ({permission.GrantedTo.User.Id})");
                     }
 
                     if (permission.GrantedToIdentities != null)
                     {
                         foreach (var identity in permission.GrantedToIdentities)
                         {
-                            Console.WriteLine($"  Granted To: {identity.User?.DisplayName} ({identity.User?.Email})");
+                            Console.WriteLine($"  Granted To: {identity.User?.DisplayName} ({identity.User?.Id})");
                         }
                     }
 
@@ -258,7 +246,6 @@ namespace SharePointExperience.Chapter05
                 Console.WriteLine($"Deleting permission: {permissionId}");
 
                 await _graphClient
-                    .Sites[siteId]
                     .Drives[driveId]
                     .Items[itemId]
                     .Permissions[permissionId]
@@ -274,16 +261,75 @@ namespace SharePointExperience.Chapter05
         }
 
         /// <summary>
-        /// Entry point for the example
+        /// Lists the permissions of a site (solo lectura).
+        /// </summary>
+        public async Task ListSitePermissionsAsync(string siteId)
+        {
+            try
+            {
+                Console.WriteLine($"Listing permissions of site: {siteId}");
+                var permissions = await _graphClient.Sites[siteId].Permissions.GetAsync();
+
+                Console.WriteLine($"Found {permissions?.Value?.Count ?? 0} site permissions:");
+                Console.WriteLine(new string('-', 80));
+                foreach (var permission in permissions?.Value ?? new System.Collections.Generic.List<Permission>())
+                {
+                    Console.WriteLine($"Permission ID: {permission.Id}");
+                    Console.WriteLine($"  Roles: {string.Join(", ", permission.Roles ?? new System.Collections.Generic.List<string>())}");
+                    if (permission.GrantedToIdentities != null)
+                    {
+                        foreach (var identity in permission.GrantedToIdentities)
+                        {
+                            Console.WriteLine($"  Granted To: {identity.User?.DisplayName}");
+                        }
+                    }
+                    Console.WriteLine(new string('-', 80));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error listing site permissions: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Entry point: construye el cliente con el módulo común y ejecuta una demo de solo
+        /// lectura listando los permisos del sitio de pruebas book-test.
         /// </summary>
         public static async Task Main(string[] args)
         {
             try
             {
-                var permOps = new PermissionOperations();
+                var graphClient = SharePointGraphClientFactory.CreateFromSecret();
+                var permOps = new PermissionOperations(graphClient);
 
-                Console.WriteLine("Permission operations class initialized successfully!");
-                Console.WriteLine("Use the methods to manage sharing links and permissions.");
+                var hostname = Environment.GetEnvironmentVariable("SHAREPOINT_HOSTNAME") ?? "olddogsoft1.sharepoint.com";
+                var sitePath = Environment.GetEnvironmentVariable("SHAREPOINT_SITE_PATH") ?? "book-test";
+
+                // Resolver el sitio por path para obtener su ID.
+                var site = await graphClient.Sites[$"{hostname}:/sites/{sitePath}"].GetAsync();
+                if (site == null)
+                {
+                    Console.WriteLine("No se encontró el sitio de pruebas.");
+                    return;
+                }
+                var siteId = site.Id ?? throw new InvalidOperationException("El sitio no tiene ID.");
+
+                // Listar permisos de un ITEM del drive del sitio de pruebas (dentro del grant
+                // Sites.Selected). Listar /sites/{id}/permissions requiere permisos de admin
+                // (Sites.Manage/FullControl), fuera del alcance de mínimo privilegio.
+                var drives = await graphClient.Sites[siteId].Drives.GetAsync();
+                var firstDrive = drives?.Value?.FirstOrDefault();
+                if (firstDrive == null)
+                {
+                    Console.WriteLine("No se encontraron bibliotecas en el sitio de pruebas.");
+                    return;
+                }
+                var driveId = firstDrive.Id ?? throw new InvalidOperationException("La biblioteca no tiene ID.");
+                await permOps.ListPermissionsAsync(siteId, driveId, "root");
+
+                Console.WriteLine("\nPermission operations completed successfully!");
             }
             catch (Exception ex)
             {

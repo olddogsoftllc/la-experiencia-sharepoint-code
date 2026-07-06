@@ -1,0 +1,24 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "whichFolder": "subdir",
+    "solutionName": "spfx-library-shared",
+    "environment": "spo",
+    "componentType": "library",
+    "componentName": "SharedLibrary",
+    "componentDescription": "SPFx Library de codigo compartido entre soluciones",
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.8",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.24.0"
+    },
+    "version": "1.20.0",
+    "libraryName": "spfx-library-shared",
+    "libraryId": "586f75ff-d9e9-4e3f-a835-763ae06ba0e2",
+    "packageManager": "npm",
+    "solutionShortDescription": "spfx-library-shared description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false
+  }
+}

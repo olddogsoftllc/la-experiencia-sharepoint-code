@@ -20,7 +20,7 @@ param()
 $script:GraphHeaders = $null
 
 function Connect-GraphApi {
-    <cmdletbinding()
+    [CmdletBinding()]
     param()
 
     try {
@@ -54,7 +54,7 @@ function Connect-GraphApi {
 }
 
 function Get-AllSites {
-    <cmdletbinding()
+    [CmdletBinding()]
     param()
 
     try {
@@ -85,7 +85,7 @@ function Get-AllSites {
 }
 
 function Get-SiteByPath {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$Hostname,
@@ -118,7 +118,7 @@ function Get-SiteByPath {
 }
 
 function Get-SiteById {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$SiteId
@@ -145,7 +145,7 @@ function Get-SiteById {
 }
 
 function Get-RootSite {
-    <cmdletbinding()
+    [CmdletBinding()]
     param()
 
     try {
@@ -170,7 +170,7 @@ function Get-RootSite {
 }
 
 function Search-Sites {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$Keyword

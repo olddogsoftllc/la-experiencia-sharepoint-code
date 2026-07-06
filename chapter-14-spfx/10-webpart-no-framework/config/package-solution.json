@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "no-framework-webpart-client-side-solution",
+    "id": "2b7c1a5a-85f0-4b8c-9c50-6ea4a270fc1c",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.20.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "no-framework-webpart description"
+      },
+      "longDescription": {
+        "default": "no-framework-webpart description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "no-framework-webpart Feature",
+        "description": "The feature that activates elements of the no-framework-webpart solution.",
+        "id": "32e70da3-36db-49d3-be0c-879586e93286",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/no-framework-webpart.sppkg"
+  }
+}

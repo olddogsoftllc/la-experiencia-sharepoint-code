@@ -8,35 +8,25 @@
 
 using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Azure.Identity;
+using LaExperiencia.SharePoint.Common;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
 
-namespace SharePointExperience.Chapter04
+namespace LaExperiencia.SharePoint.Chapter04.Documents
 {
     /// <summary>
-    /// Example class demonstrating SharePoint document operations
+    /// Example class demonstrating SharePoint document operations.
+    /// El cliente de Graph se inyecta por constructor (DI) desde el módulo común.
     /// </summary>
     public class DocumentOperations
     {
         private readonly GraphServiceClient _graphClient;
 
-        /// <summary>
-        /// Initializes a new instance of DocumentOperations
-        /// </summary>
-        public DocumentOperations()
+        /// <summary>Crea una instancia con un cliente de Graph inyectado (DI).</summary>
+        public DocumentOperations(GraphServiceClient graphClient)
         {
-            string tenantId = Environment.GetEnvironmentVariable("TENANT_ID")
-                ?? throw new ArgumentException("TENANT_ID environment variable is required");
-            string clientId = Environment.GetEnvironmentVariable("CLIENT_ID")
-                ?? throw new ArgumentException("CLIENT_ID environment variable is required");
-            string clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET")
-                ?? throw new ArgumentException("CLIENT_SECRET environment variable is required");
-
-            var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
-            _graphClient = new GraphServiceClient(credential);
+            _graphClient = graphClient ?? throw new ArgumentNullException(nameof(graphClient));
         }
 
         /// <summary>
@@ -47,7 +37,7 @@ namespace SharePointExperience.Chapter04
         /// <param name="filePath">Local path to the file</param>
         /// <param name="destinationFileName">Name for the file in SharePoint</param>
         /// <returns>The uploaded drive item</returns>
-        public async Task<DriveItem> UploadFileAsync(
+        public async Task<DriveItem?> UploadFileAsync(
             string siteId,
             string driveId,
             string filePath,
@@ -63,7 +53,6 @@ namespace SharePointExperience.Chapter04
 
                 // Upload the file
                 var uploadedItem = await _graphClient
-                    .Sites[siteId]
                     .Drives[driveId]
                     .Items["root"]
                     .ItemWithPath(destinationFileName)
@@ -104,11 +93,15 @@ namespace SharePointExperience.Chapter04
 
                 // Get the file content
                 var stream = await _graphClient
-                    .Sites[siteId]
                     .Drives[driveId]
                     .Items[itemId]
                     .Content
                     .GetAsync();
+
+                if (stream == null)
+                {
+                    throw new InvalidOperationException("Graph no devolvió contenido para el item solicitado.");
+                }
 
                 // Save to local file
                 using var fileStream = new FileStream(downloadPath, FileMode.Create);
@@ -134,17 +127,17 @@ namespace SharePointExperience.Chapter04
                 Console.WriteLine($"Searching for files: '{query}'");
 
                 // Search for drive items
-                var searchResults = await _graphClient.Search.Query.PostAsync(new Microsoft.Graph.Search.Query.QueryPostRequestBody
+                var searchResults = await _graphClient.Search.Query.PostAsQueryPostResponseAsync(new Microsoft.Graph.Search.Query.QueryPostRequestBody
                 {
-                    Requests = new List<Microsoft.Graph.Search.Models.SearchRequest>
+                    Requests = new System.Collections.Generic.List<Microsoft.Graph.Models.SearchRequest>
                     {
-                        new Microsoft.Graph.Search.Models.SearchRequest
+                        new Microsoft.Graph.Models.SearchRequest
                         {
-                            EntityTypes = new List<Microsoft.Graph.Search.Models.EntityType>
+                            EntityTypes = new System.Collections.Generic.List<Microsoft.Graph.Models.EntityType?>
                             {
-                                Microsoft.Graph.Search.Models.EntityType.DriveItem
+                                Microsoft.Graph.Models.EntityType.DriveItem
                             },
-                            Query = new Microsoft.Graph.Search.Models.SearchQuery
+                            Query = new Microsoft.Graph.Models.SearchQuery
                             {
                                 QueryString = query
                             }
@@ -155,11 +148,11 @@ namespace SharePointExperience.Chapter04
                 Console.WriteLine($"Search results:");
                 Console.WriteLine(new string('-', 80));
 
-                foreach (var result in searchResults?.Value ?? new List<Microsoft.Graph.Search.Models.SearchResponse>())
+                foreach (var result in searchResults?.Value ?? new System.Collections.Generic.List<Microsoft.Graph.Models.SearchResponse>())
                 {
-                    foreach (var hit in result?.HitsContainers ?? new List<Microsoft.Graph.Search.Models.SearchHitsContainer>())
+                    foreach (var hit in result?.HitsContainers ?? new System.Collections.Generic.List<Microsoft.Graph.Models.SearchHitsContainer>())
                     {
-                        foreach (var item in hit?.Hits ?? new List<Microsoft.Graph.Search.Models.SearchHit>())
+                        foreach (var item in hit?.Hits ?? new System.Collections.Generic.List<Microsoft.Graph.Models.SearchHit>())
                         {
                             var resource = item?.Resource as DriveItem;
                             if (resource != null)
@@ -193,7 +186,6 @@ namespace SharePointExperience.Chapter04
                 Console.WriteLine($"Listing files in folder: {folderPath}");
 
                 var items = await _graphClient
-                    .Sites[siteId]
                     .Drives[driveId]
                     .Root
                     .ItemWithPath(folderPath)
@@ -203,7 +195,7 @@ namespace SharePointExperience.Chapter04
                 Console.WriteLine($"Found {items?.Value?.Count ?? 0} items:");
                 Console.WriteLine(new string('-', 80));
 
-                foreach (var item in items?.Value ?? new List<DriveItem>())
+                foreach (var item in items?.Value ?? new System.Collections.Generic.List<DriveItem>())
                 {
                     string itemType = item.Folder != null ? "Folder" : "File";
                     Console.WriteLine($"{itemType}: {item.Name}");
@@ -227,14 +219,13 @@ namespace SharePointExperience.Chapter04
         /// <param name="driveId">The drive ID</param>
         /// <param name="itemId">The item ID</param>
         /// <returns>The drive item metadata</returns>
-        public async Task<DriveItem> GetFileMetadataAsync(string siteId, string driveId, string itemId)
+        public async Task<DriveItem?> GetFileMetadataAsync(string siteId, string driveId, string itemId)
         {
             try
             {
                 Console.WriteLine($"Fetching metadata for item: {itemId}");
 
                 var item = await _graphClient
-                    .Sites[siteId]
                     .Drives[driveId]
                     .Items[itemId]
                     .GetAsync();
@@ -258,19 +249,58 @@ namespace SharePointExperience.Chapter04
 
         /// <summary>
         /// Entry point for the example
+        /// <summary>
+        /// Lists the document libraries (drives) of a site. Solo lectura.
+        /// </summary>
+        public async Task ListDrivesAsync(string siteId)
+        {
+            try
+            {
+                Console.WriteLine($"Listing document libraries of site: {siteId}");
+                var drives = await _graphClient.Sites[siteId].Drives.GetAsync();
+
+                Console.WriteLine($"Found {drives?.Value?.Count ?? 0} libraries:");
+                Console.WriteLine(new string('-', 80));
+                foreach (var drive in drives?.Value ?? new System.Collections.Generic.List<Drive>())
+                {
+                    Console.WriteLine($"Library: {drive.Name}");
+                    Console.WriteLine($"  ID: {drive.Id}");
+                    Console.WriteLine($"  Type: {drive.DriveType}");
+                    Console.WriteLine(new string('-', 80));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error listing libraries: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Entry point: construye el cliente con el módulo común y ejecuta una demo de solo
+        /// lectura listando las bibliotecas del sitio de pruebas book-test.
         /// </summary>
         public static async Task Main(string[] args)
         {
             try
             {
-                var docOps = new DocumentOperations();
+                var graphClient = SharePointGraphClientFactory.CreateFromSecret();
+                var docOps = new DocumentOperations(graphClient);
 
-                // Example: List files in root folder
-                // Uncomment and provide actual IDs to test
-                // await docOps.ListFilesInFolderAsync("site-id", "drive-id", "");
+                var hostname = Environment.GetEnvironmentVariable("SHAREPOINT_HOSTNAME") ?? "olddogsoft1.sharepoint.com";
+                var sitePath = Environment.GetEnvironmentVariable("SHAREPOINT_SITE_PATH") ?? "book-test";
 
-                Console.WriteLine("\nDocument operations class initialized successfully!");
-                Console.WriteLine("Use the methods to perform upload, download, and search operations.");
+                // Resolver el sitio por path para obtener su ID (el path form no sirve para .Drives).
+                var site = await graphClient.Sites[$"{hostname}:/sites/{sitePath}"].GetAsync();
+                if (site == null)
+                {
+                    Console.WriteLine("No se encontró el sitio de pruebas.");
+                    return;
+                }
+                var siteId = site.Id ?? throw new InvalidOperationException("El sitio no tiene ID.");
+                await docOps.ListDrivesAsync(siteId);
+
+                Console.WriteLine("\nDocument operations completed successfully!");
             }
             catch (Exception ex)
             {

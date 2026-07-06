@@ -18,7 +18,7 @@ param()
 #Requires -Modules MSAL.PS
 
 function Get-GraphAccessToken {
-    <cmdletbinding()
+    [CmdletBinding()]
     param()
 
     try {
@@ -58,7 +58,7 @@ function Get-GraphAccessToken {
 }
 
 function Connect-GraphWithToken {
-    <cmdletbinding()
+    [CmdletBinding()]
     param()
 
     try {
@@ -80,7 +80,7 @@ function Connect-GraphWithToken {
 }
 
 function Test-GraphConnection {
-    <cmdletbinding()
+    [CmdletBinding()]
     param()
 
     try {

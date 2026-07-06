@@ -1,0 +1,36 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.ownApiWebPart {
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+  &.dark {
+    background-color: "[theme:bodyBackground, default: #2d2d2d]";
+  }
+}
+
+.welcome {
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.subtitle {
+  color: "[theme:bodySubtext, default: #605e5c]";
+  color: var(--bodySubtext);
+  font-size: 14px;
+}
+
+.json {
+  background-color: "[theme:neutralLighter, default:#f3f2f1]";
+  background-color: var(--neutralLighter);
+  padding: 12px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+  overflow: auto;
+  max-height: 360px;
+}

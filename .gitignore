@@ -1,27 +1,34 @@
 # Build
-  bin/
-  obj/
-  node_modules/
-  target/
-  __pycache__/
-  dist/
-  build/
+bin/
+obj/
+node_modules/
+target/
+__pycache__/
+dist/
+build/
 
-  # Secrets
-  .env
-  *.env
-  appsettings.json
-  *.pfx
-  *.cer
-  *.key
+# Secrets
+.env
+*.env
+!.env.example
+appsettings.json
+appsettings.*.json
+token_cache.json
+msal_cache.bin
+*.pfx
+*.p12
+*.cer
+*.crt
+*.key
+*.pem
 
-  # IDE
-  .vscode/
-  .idea/
+# IDE
+.vscode/
+.idea/
 
-  # OS
-  .DS_Store
-  Thumbs.db
+# OS
+.DS_Store
+Thumbs.db
 
-  # Logs
-  *.log
+# Logs
+*.log

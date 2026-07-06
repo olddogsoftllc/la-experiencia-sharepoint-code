@@ -1,0 +1,46 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "aadhttpclient-own-api-client-side-solution",
+    "id": "a7fb58a3-72ec-4d40-968e-efbcbb94efbf",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "webApiPermissionRequests": [
+      {
+        "resource": "api://your-api-app-id-uri",
+        "scope": "user_impersonation"
+      }
+    ],
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.20.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "aadhttpclient-own-api description"
+      },
+      "longDescription": {
+        "default": "aadhttpclient-own-api description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "aadhttpclient-own-api Feature",
+        "description": "The feature that activates elements of the aadhttpclient-own-api solution.",
+        "id": "b7697fd9-59dd-47ab-ab5b-50032560214c",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/aadhttpclient-own-api.sppkg"
+  }
+}

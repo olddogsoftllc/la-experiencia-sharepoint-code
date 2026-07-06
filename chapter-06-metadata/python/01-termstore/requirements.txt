@@ -1,0 +1,8 @@
+# Ejemplo del Capítulo 6: Managed Metadata y Taxonomía
+# Requisitos de Python
+
+# Microsoft Graph SDK para Python
+msgraph-sdk>=1.0.0
+
+# Azure Identity para autenticación
+azure-identity>=1.15.0

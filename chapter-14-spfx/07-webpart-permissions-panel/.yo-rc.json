@@ -1,0 +1,25 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "whichFolder": "subdir",
+    "solutionName": "permissions-panel",
+    "environment": "spo",
+    "componentType": "webpart",
+    "template": "react",
+    "componentName": "PermissionsPanelWebPart",
+    "componentDescription": "Panel de permisos del sitio via Graph (capstone) con DI y telemetria",
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.8",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.24.0"
+    },
+    "version": "1.20.0",
+    "libraryName": "permissions-panel",
+    "libraryId": "3b417cdf-4eec-429b-816e-05c420432ace",
+    "packageManager": "npm",
+    "solutionShortDescription": "permissions-panel description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false
+  }
+}

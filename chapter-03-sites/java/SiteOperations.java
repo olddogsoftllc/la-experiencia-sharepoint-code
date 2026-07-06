@@ -132,10 +132,9 @@ public class SiteOperations {
 
             for (int i = 0; i < sites.size(); i++) {
                 JsonObject site = sites.get(i).getAsJsonObject();
-                System.out.println("Name: " + site.get("name").getAsString());
-                System.out.println("  ID: " + site.get("id").getAsString());
-                System.out.println("  Web URL: " + site.get("webUrl").getAsString());
-                System.out.println("  Display Name: " + site.get("displayName").getAsString());
+                System.out.println("Display Name: " + safeStr(site, "displayName", safeStr(site, "name", "N/A")));
+                System.out.println("  ID: " + safeStr(site, "id", "N/A"));
+                System.out.println("  Web URL: " + safeStr(site, "webUrl", "N/A"));
                 System.out.println("-".repeat(80));
             }
 
@@ -143,6 +142,14 @@ public class SiteOperations {
             System.err.println("Error listing sites: " + e.getMessage());
             throw e;
         }
+    }
+
+    /** Devuelve el valor string de una clave de un JsonObject, o default si es null/ausente. */
+    private String safeStr(JsonObject obj, String key, String defaultValue) {
+        if (obj.get(key) != null && !obj.get(key).isJsonNull()) {
+            return obj.get(key).getAsString();
+        }
+        return defaultValue;
     }
 
     /**
@@ -169,9 +176,9 @@ public class SiteOperations {
             JsonObject site = gson.fromJson(response.body(), JsonObject.class);
 
             System.out.println("\nRoot site:");
-            System.out.println("  Name: " + site.get("name").getAsString());
-            System.out.println("  ID: " + site.get("id").getAsString());
-            System.out.println("  Web URL: " + site.get("webUrl").getAsString());
+            System.out.println("  Display Name: " + safeStr(site, "displayName", safeStr(site, "name", "N/A")));
+            System.out.println("  ID: " + safeStr(site, "id", "N/A"));
+            System.out.println("  Web URL: " + safeStr(site, "webUrl", "N/A"));
 
         } catch (Exception e) {
             System.err.println("Error getting root site: " + e.getMessage());

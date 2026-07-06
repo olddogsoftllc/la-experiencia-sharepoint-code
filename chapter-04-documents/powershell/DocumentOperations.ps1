@@ -19,7 +19,7 @@ param()
 $script:GraphHeaders = $null
 
 function Connect-GraphApi {
-    <cmdletbinding()
+    [CmdletBinding()]
     param()
 
     try {
@@ -51,7 +51,7 @@ function Connect-GraphApi {
 }
 
 function Send-FileToSharePoint {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$SiteId,
@@ -102,7 +102,7 @@ function Send-FileToSharePoint {
 }
 
 function Get-FileFromSharePoint {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$SiteId,
@@ -135,7 +135,7 @@ function Get-FileFromSharePoint {
 }
 
 function Find-SharePointFiles {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$Query
@@ -184,7 +184,7 @@ function Find-SharePointFiles {
 }
 
 function Get-DriveFiles {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$SiteId,
@@ -231,7 +231,7 @@ function Get-DriveFiles {
 }
 
 function Get-FileMetadata {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$SiteId,
@@ -267,12 +267,57 @@ function Get-FileMetadata {
     }
 }
 
-# Main execution
+function Get-DriveLibraries {
+    <#
+        .SYNOPSIS
+        Lista las bibliotecas de documentos (drives) de un sitio. Solo lectura.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$SiteId
+    )
+
+    try {
+        if (-not $script:GraphHeaders) { Connect-GraphApi }
+        Write-Host "Listing document libraries of site: $SiteId" -ForegroundColor Cyan
+
+        $uri = "https://graph.microsoft.com/v1.0/sites/$SiteId/drives"
+        $response = Invoke-RestMethod -Uri $uri -Headers $script:GraphHeaders -Method Get
+
+        Write-Host "Found $($response.value.Count) libraries:" -ForegroundColor Green
+        Write-Host "-" * 80
+        foreach ($drive in $response.value) {
+            Write-Host "Library: $($drive.name)" -ForegroundColor Yellow
+            Write-Host "  ID: $($drive.id)"
+            Write-Host "  Type: $($drive.driveType)"
+            Write-Host "-" * 80
+        }
+        return $response.value
+    }
+    catch {
+        Write-Error "Error listing libraries: $_"
+        throw
+    }
+}
+
+# Main execution: demo de solo lectura contra el sitio de pruebas book-test.
 try {
     Write-Host "=== SharePoint Document Operations Example ===" -ForegroundColor Yellow
 
-    Write-Host "`nDocument operations module loaded successfully!" -ForegroundColor Green
-    Write-Host "Use the functions to perform upload, download, and search operations."
+    if (-not $script:GraphHeaders) { Connect-GraphApi }
+
+    $hostname = if ($env:SHAREPOINT_HOSTNAME) { $env:SHAREPOINT_HOSTNAME } else { "olddogsoft1.sharepoint.com" }
+    $sitePath = if ($env:SHAREPOINT_SITE_PATH) { $env:SHAREPOINT_SITE_PATH } else { "book-test" }
+
+    # Resolver el sitio por path para obtener su ID.
+    $encodedPath = [uri]::EscapeDataString("sites/$sitePath")
+    $siteUri = "https://graph.microsoft.com/v1.0/sites/${hostname}:/$encodedPath"
+    $site = Invoke-RestMethod -Uri $siteUri -Headers $script:GraphHeaders -Method Get
+
+    Get-DriveLibraries -SiteId $site.id
+
+    Write-Host "`nDocument operations completed successfully!" -ForegroundColor Green
 }
 catch {
     Write-Error "Script execution failed: $_"

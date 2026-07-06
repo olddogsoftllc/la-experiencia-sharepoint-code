@@ -3,12 +3,10 @@ permission_operations.py
 Chapter 05: Permissions
 
 SharePoint Permission Operations Example
-Demonstrates managing sharing links and permissions
+Demonstrates managing sharing links and permissions.
 
-Required environment variables:
-    - TENANT_ID
-    - CLIENT_ID
-    - CLIENT_SECRET
+Usa el módulo de auth compartido (common/laexperiencia_sharepoint): el access token
+se inyecta por constructor (DI), no se obtiene dentro de la clase.
 """
 
 import os
@@ -16,54 +14,46 @@ import sys
 from typing import Dict, List, Optional
 import requests
 
+from laexperiencia_sharepoint import get_access_token
+
+GRAPH_BASE = "https://graph.microsoft.com/v1.0"
+
 
 class PermissionOperations:
-    """SharePoint Permission Operations handler"""
+    """SharePoint Permission Operations handler."""
 
-    def __init__(self):
-        self.tenant_id = os.environ.get('TENANT_ID')
-        self.client_id = os.environ.get('CLIENT_ID')
-        self.client_secret = os.environ.get('CLIENT_SECRET')
-        self.access_token = None
-
-        self._validate_config()
-
-    def _validate_config(self) -> None:
-        """Validates configuration"""
-        required = ['TENANT_ID', 'CLIENT_ID', 'CLIENT_SECRET']
-        missing = [key for key in required if not os.environ.get(key)]
-
-        if missing:
-            raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
-
-    def _get_access_token(self) -> str:
-        """Gets access token for Microsoft Graph"""
-        if self.access_token:
-            return self.access_token
-
-        token_endpoint = (
-            f"https://login.microsoftonline.com/{self.tenant_id}/oauth2/v2.0/token"
-        )
-        request_data = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'scope': 'https://graph.microsoft.com/.default',
-            'grant_type': 'client_credentials'
-        }
-
-        response = requests.post(token_endpoint, data=request_data)
-        response.raise_for_status()
-
-        self.access_token = response.json()['access_token']
-        return self.access_token
+    def __init__(self, access_token: str):
+        if not access_token:
+            raise ValueError("Se requiere un access token para PermissionOperations.")
+        self.access_token = access_token
 
     def _get_headers(self) -> Dict[str, str]:
-        """Gets authenticated headers"""
-        token = self._get_access_token()
         return {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json'
+            'Authorization': f'Bearer {self.access_token}',
+            'Content-Type': 'application/json',
         }
+
+    def list_site_permissions(self, site_id: str) -> List[Dict]:
+        """Lists the permissions of a site. Solo lectura."""
+        try:
+            print(f"Listing permissions of site: {site_id}")
+            url = f"{GRAPH_BASE}/sites/{site_id}/permissions"
+            response = requests.get(url, headers=self._get_headers())
+            response.raise_for_status()
+            permissions = response.json().get('value', [])
+            print(f"Found {len(permissions)} site permissions:")
+            print("-" * 80)
+            for permission in permissions:
+                print(f"Permission ID: {permission.get('id')}")
+                print(f"  Roles: {', '.join(permission.get('roles', []))}")
+                for identity in permission.get('grantedToIdentities', []):
+                    user = identity.get('user', {})
+                    print(f"  Granted To: {user.get('displayName')}")
+                print("-" * 80)
+            return permissions
+        except requests.exceptions.RequestException as e:
+            print(f"Error listing site permissions: {e}")
+            raise
 
     def create_anonymous_link(
         self,
@@ -304,15 +294,34 @@ class PermissionOperations:
 
 
 def main():
-    """Main execution function"""
+    """Construye el token con el módulo común y lista los permisos del sitio book-test."""
     try:
         print("=== SharePoint Permission Operations Example ===\n")
+        token = get_access_token()
+        perm_ops = PermissionOperations(token)
 
-        perm_ops = PermissionOperations()
+        hostname = os.environ.get("SHAREPOINT_HOSTNAME", "olddogsoft1.sharepoint.com")
+        site_path = os.environ.get("SHAREPOINT_SITE_PATH", "book-test")
 
-        print("Permission operations class initialized successfully!")
-        print("Use the methods to manage sharing links and permissions.")
+        # Resolver el sitio por path para obtener su ID.
+        site_url = (
+            f"{GRAPH_BASE}/sites/"
+            f"{requests.utils.quote(hostname, safe='')}:/sites/"
+            f"{requests.utils.quote(site_path, safe='')}"
+        )
+        site = requests.get(site_url, headers=perm_ops._get_headers())
+        site.raise_for_status()
+        site_id = site.json()["id"]
 
+        # Listar los drives del sitio y tomar el primero; listar permisos del item root.
+        # (Listar /sites/{id}/permissions requiere permisos de admin fuera de Sites.Selected;
+        #  los permisos de un item del drive sí están cubiertos por el grant Sites.Selected.)
+        drives = requests.get(f"{GRAPH_BASE}/sites/{site_id}/drives", headers=perm_ops._get_headers())
+        drives.raise_for_status()
+        first_drive = drives.json()["value"][0]
+        perm_ops.list_permissions(site_id, first_drive["id"], "root")
+
+        print("\nPermission operations completed successfully!")
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)

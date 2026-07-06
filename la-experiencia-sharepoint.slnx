@@ -1,0 +1,32 @@
+<Solution>
+  <Folder Name="/chapter-02-auth/" />
+  <Folder Name="/chapter-02-auth/csharp/">
+    <Project Path="chapter-02-auth/csharp/AuthWithCertificate.csproj" />
+    <Project Path="chapter-02-auth/csharp/AuthWithTokenCache.csproj" />
+    <Project Path="chapter-02-auth/csharp/GraphAuthExample.csproj" />
+  </Folder>
+  <Folder Name="/chapter-03-sites/" />
+  <Folder Name="/chapter-03-sites/csharp/">
+    <Project Path="chapter-03-sites/csharp/Chapter03Sites.csproj" />
+  </Folder>
+  <Folder Name="/chapter-04-documents/" />
+  <Folder Name="/chapter-04-documents/csharp/">
+    <Project Path="chapter-04-documents/csharp/Chapter04Documents.csproj" />
+  </Folder>
+  <Folder Name="/chapter-05-permissions/" />
+  <Folder Name="/chapter-05-permissions/csharp/">
+    <Project Path="chapter-05-permissions/csharp/Chapter05Permissions.csproj" />
+  </Folder>
+  <Folder Name="/chapter-06-metadata/" />
+  <Folder Name="/chapter-06-metadata/csharp/">
+    <Project Path="chapter-06-metadata/csharp/Chapter06Metadata.csproj" />
+  </Folder>
+  <Folder Name="/chapter-07-automation/" />
+  <Folder Name="/chapter-07-automation/csharp/">
+    <Project Path="chapter-07-automation/csharp/Chapter07Automation.csproj" />
+  </Folder>
+  <Folder Name="/common/">
+    <Project Path="common/SharePointGraphAuth.Tests/SharePointGraphAuth.Tests.csproj" />
+    <Project Path="common/SharePointGraphAuth/SharePointGraphAuth.csproj" />
+  </Folder>
+</Solution>

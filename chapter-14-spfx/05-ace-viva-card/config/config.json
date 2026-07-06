@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "tickets-ace-adaptive-card-extension": {
+      "components": [
+        {
+          "entrypoint": "./lib/adaptiveCardExtensions/ticketsAce/TicketsAceAdaptiveCardExtension.js",
+          "manifest": "./src/adaptiveCardExtensions/ticketsAce/TicketsAceAdaptiveCardExtension.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "TicketsAceAdaptiveCardExtensionStrings": "lib/adaptiveCardExtensions/ticketsAce/loc/{locale}.js"
+  }
+}

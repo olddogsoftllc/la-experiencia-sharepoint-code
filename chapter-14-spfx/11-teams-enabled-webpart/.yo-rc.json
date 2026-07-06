@@ -1,0 +1,25 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "whichFolder": "subdir",
+    "solutionName": "teams-webpart",
+    "environment": "spo",
+    "componentType": "webpart",
+    "template": "react",
+    "componentName": "TeamsEnabledWebPart",
+    "componentDescription": "Web Part habilitado para Teams con manifest y theming",
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.8",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.24.0"
+    },
+    "version": "1.20.0",
+    "libraryName": "teams-webpart",
+    "libraryId": "180a98c9-74c8-4fa1-b8a3-6d946f195ae2",
+    "packageManager": "npm",
+    "solutionShortDescription": "teams-webpart description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false
+  }
+}

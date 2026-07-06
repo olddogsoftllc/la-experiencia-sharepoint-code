@@ -3,13 +3,12 @@
   "version": "1.0.0",
   "description": "Código de ejemplos para La Experiencia SharePoint: Desarrollo con Microsoft Graph",
   "scripts": {
-    "auth": "node capitulo-02-auth/javascript/auth-flow.js",
-    "sites": "node capitulo-03-sitios/javascript/site-operations.js",
-    "documents": "node capitulo-04-documentos/javascript/document-operations.js",
-    "permissions": "node capitulo-05-permisos/javascript/permission-operations.js",
-    "metadata": "node capitulo-06-metadata/javascript/metadata-operations.js",
-    "automation": "node capitulo-07-automatizacion/javascript/workflow-operations.js",
-    "integrador": "node proyecto-integrador/javascript/workflow-complete.js"
+    "auth": "node chapter-02-auth/javascript/auth-flow.js",
+    "auth-cert": "node chapter-02-auth/javascript/AuthWithCertificate.js",
+    "sites": "node chapter-03-sites/javascript/SiteOperations.js",
+    "documents": "node chapter-04-documents/javascript/DocumentOperations.js",
+    "permissions": "node chapter-05-permissions/javascript/PermissionOperations.js",
+    "test": "jest"
   },
   "keywords": [
     "microsoft-graph",
@@ -23,9 +22,21 @@
   "engines": {
     "node": ">=18.0.0"
   },
+  "exports": {
+    "./graphAuth": "./common/graphAuth.js"
+  },
   "dependencies": {
     "@azure/identity": "^4.0.0",
     "@microsoft/microsoft-graph-client": "^3.0.0",
-    "dotenv": "^16.4.0"
+    "dotenv": "^16.4.0",
+    "@azure/msal-node": "^2.9.0",
+    "axios": "^1.7.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/__tests__/**/*.test.js"]
   }
 }

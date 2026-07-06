@@ -3,12 +3,10 @@ document_operations.py
 Chapter 04: Documents
 
 SharePoint Document Operations Example
-Demonstrates upload, download, and search operations for documents
+Demonstrates upload, download, and search operations for documents.
 
-Required environment variables:
-    - TENANT_ID
-    - CLIENT_ID
-    - CLIENT_SECRET
+Usa el módulo de auth compartido (common/laexperiencia_sharepoint): el access token
+se inyecta por constructor (DI), no se obtiene dentro de la clase.
 """
 
 import os
@@ -16,54 +14,44 @@ import sys
 from typing import Dict, List, Optional
 import requests
 
+from laexperiencia_sharepoint import get_access_token
+
+GRAPH_BASE = "https://graph.microsoft.com/v1.0"
+
 
 class DocumentOperations:
-    """SharePoint Document Operations handler"""
+    """SharePoint Document Operations handler."""
 
-    def __init__(self):
-        self.tenant_id = os.environ.get('TENANT_ID')
-        self.client_id = os.environ.get('CLIENT_ID')
-        self.client_secret = os.environ.get('CLIENT_SECRET')
-        self.access_token = None
-
-        self._validate_config()
-
-    def _validate_config(self) -> None:
-        """Validates configuration"""
-        required = ['TENANT_ID', 'CLIENT_ID', 'CLIENT_SECRET']
-        missing = [key for key in required if not os.environ.get(key)]
-
-        if missing:
-            raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
-
-    def _get_access_token(self) -> str:
-        """Gets access token for Microsoft Graph"""
-        if self.access_token:
-            return self.access_token
-
-        token_endpoint = (
-            f"https://login.microsoftonline.com/{self.tenant_id}/oauth2/v2.0/token"
-        )
-        request_data = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'scope': 'https://graph.microsoft.com/.default',
-            'grant_type': 'client_credentials'
-        }
-
-        response = requests.post(token_endpoint, data=request_data)
-        response.raise_for_status()
-
-        self.access_token = response.json()['access_token']
-        return self.access_token
+    def __init__(self, access_token: str):
+        if not access_token:
+            raise ValueError("Se requiere un access token para DocumentOperations.")
+        self.access_token = access_token
 
     def _get_headers(self, content_type: str = 'application/json') -> Dict[str, str]:
-        """Gets authenticated headers"""
-        token = self._get_access_token()
         return {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': content_type
+            'Authorization': f'Bearer {self.access_token}',
+            'Content-Type': content_type,
         }
+
+    def list_drives(self, site_id: str) -> List[Dict]:
+        """Lists the document libraries (drives) of a site. Solo lectura."""
+        try:
+            print(f"Listing document libraries of site: {site_id}")
+            url = f"{GRAPH_BASE}/sites/{site_id}/drives"
+            response = requests.get(url, headers=self._get_headers())
+            response.raise_for_status()
+            drives = response.json().get('value', [])
+            print(f"Found {len(drives)} libraries:")
+            print("-" * 80)
+            for drive in drives:
+                print(f"Library: {drive.get('name')}")
+                print(f"  ID: {drive.get('id')}")
+                print(f"  Type: {drive.get('driveType')}")
+                print("-" * 80)
+            return drives
+        except requests.exceptions.RequestException as e:
+            print(f"Error listing libraries: {e}")
+            raise
 
     def upload_file(
         self,
@@ -303,15 +291,28 @@ class DocumentOperations:
 
 
 def main():
-    """Main execution function"""
+    """Construye el token con el módulo común y lista las bibliotecas del sitio book-test."""
     try:
         print("=== SharePoint Document Operations Example ===\n")
+        token = get_access_token()
+        doc_ops = DocumentOperations(token)
 
-        doc_ops = DocumentOperations()
+        hostname = os.environ.get("SHAREPOINT_HOSTNAME", "olddogsoft1.sharepoint.com")
+        site_path = os.environ.get("SHAREPOINT_SITE_PATH", "book-test")
 
-        print("Document operations class initialized successfully!")
-        print("Use the methods to perform upload, download, and search operations.")
+        # Resolver el sitio por path para obtener su ID (el path form no sirve para /drives).
+        site_url = (
+            f"{GRAPH_BASE}/sites/"
+            f"{requests.utils.quote(hostname, safe='')}:/sites/"
+            f"{requests.utils.quote(site_path, safe='')}"
+        )
+        site = requests.get(site_url, headers=doc_ops._get_headers())
+        site.raise_for_status()
+        site_id = site.json()["id"]
 
+        doc_ops.list_drives(site_id)
+
+        print("\nDocument operations completed successfully!")
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)

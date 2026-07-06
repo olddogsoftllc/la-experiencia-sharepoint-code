@@ -1,0 +1,8 @@
+pyproject.toml
+laexperiencia_sharepoint/__init__.py
+laexperiencia_sharepoint/graph_auth.py
+laexperiencia_sharepoint.egg-info/PKG-INFO
+laexperiencia_sharepoint.egg-info/SOURCES.txt
+laexperiencia_sharepoint.egg-info/dependency_links.txt
+laexperiencia_sharepoint.egg-info/requires.txt
+laexperiencia_sharepoint.egg-info/top_level.txt

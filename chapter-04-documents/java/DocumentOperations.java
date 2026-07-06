@@ -234,16 +234,75 @@ public class DocumentOperations {
     }
 
     /**
-     * Entry point for the example
+     * Lists the document libraries (drives) of a site. Solo lectura.
+     */
+    public void listDrives(String siteId) throws IOException, InterruptedException {
+        try {
+            System.out.println("Listing document libraries of site: " + siteId);
+            String token = getAccessToken();
+            String url = String.format("https://graph.microsoft.com/v1.0/sites/%s/drives", siteId);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + token)
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                throw new IOException("Error listing drives: " + response.body());
+            }
+
+            JsonObject json = gson.fromJson(response.body(), JsonObject.class);
+            var drives = gson.fromJson(json.get("value"), com.google.gson.JsonArray.class);
+            System.out.println("Found " + drives.size() + " libraries:");
+            System.out.println("-".repeat(80));
+            for (var d : drives) {
+                JsonObject drive = d.getAsJsonObject();
+                System.out.println("Library: " + drive.get("name"));
+                System.out.println("  ID: " + drive.get("id"));
+                System.out.println("  Type: " + drive.get("driveType"));
+                System.out.println("-".repeat(80));
+            }
+        } catch (Exception e) {
+            System.err.println("Error listing libraries: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * Entry point: demo de solo lectura contra el sitio de pruebas book-test.
      */
     public static void main(String[] args) {
         try {
             System.out.println("=== SharePoint Document Operations Example ===\n");
-
             DocumentOperations docOps = new DocumentOperations();
 
-            System.out.println("Document operations class initialized successfully!");
-            System.out.println("Use the methods to perform upload, download, and search operations.");
+            String hostname = System.getenv("SHAREPOINT_HOSTNAME");
+            if (hostname == null || hostname.isBlank()) hostname = "olddogsoft1.sharepoint.com";
+            String sitePath = System.getenv("SHAREPOINT_SITE_PATH");
+            if (sitePath == null || sitePath.isBlank()) sitePath = "book-test";
+
+            // Resolver el sitio por path para obtener su ID.
+            String token = docOps.getAccessToken();
+            String siteUrl = String.format(
+                "https://graph.microsoft.com/v1.0/sites/%s:/sites/%s",
+                java.net.URLEncoder.encode(hostname, "UTF-8"),
+                java.net.URLEncoder.encode(sitePath, "UTF-8"));
+            HttpRequest siteReq = HttpRequest.newBuilder()
+                .uri(URI.create(siteUrl))
+                .header("Authorization", "Bearer " + token)
+                .GET()
+                .build();
+            HttpResponse<String> siteResp = docOps.httpClient.send(siteReq, HttpResponse.BodyHandlers.ofString());
+            if (siteResp.statusCode() != 200) {
+                throw new IOException("Error resolving site: " + siteResp.body());
+            }
+            String siteId = docOps.gson.fromJson(siteResp.body(), JsonObject.class).get("id").getAsString();
+
+            docOps.listDrives(siteId);
+            System.out.println("\nDocument operations completed successfully!");
 
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());

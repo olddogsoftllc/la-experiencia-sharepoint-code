@@ -140,17 +140,17 @@ bash smoke-tests.sh
 - **Operaciones de escritura** (upload, create link, grant access, crear webhooks): no se prueban en automático para no mutar el tenant; los mains usan solo lecturas.
 - **Sin tests unitarios de los métodos de negocio** de cada capítulo (p.ej. `ListSitesAsync`): requeriría mockear `GraphServiceClient` (Kiota), fuera del alcance pragmático actual.
 
-**Avance desde la versión anterior:** caps 3/4/5 PowerShell con mains reales añadidos al smoke; cap3/4 Java con mains reales añadidos al smoke; **cap5 Java creado y validado** (PermissionOperations, SDK v6 + DI); **bug del factory Java corregido** (UnsupportedOperationException); **Fase 4 Sites.Selected validada** (mains dentro del grant; cap5 lista permisos de item del drive). Smoke 24/24 = **40/40 validadas en verde**.
+**Avance desde la versión anterior:** caps 3/4/5 PowerShell con mains reales añadidos al smoke; cap3/4 Java con mains reales añadidos al smoke; **cap5 Java creado y validado** (PermissionOperations, SDK v6 + DI); **bug del factory Java corregido** (UnsupportedOperationException); **Fase 4 Sites.Selected validada** (mains dentro del grant; cap5 lista permisos de item del drive); **auth con certificado integrada en los 5 factories comunes** (auto-detección, +17 unit tests de cert). Suite total **57/57 en verde** (33 unit + 24 smoke).
 
 ---
 
 ## 5. Conclusión
 
-La suite automatizada cubre **40 pruebas (16 unit + 24 smoke), 40/40 validadas en verde**, validando que:
+La suite automatizada cubre **57 pruebas (33 unit + 24 smoke), 57/57 validadas en verde**, validando que:
 1. El módulo de auth compartido valida y construye clientes en los 5 lenguajes.
 2. Los ejemplos de caps 3-7 (C#/Python/JS), cap3 (PS) y caps 3-4/5/6-7 (Java) **corren de extremo a extremo** contra el tenant real y devuelven datos de `book-test` con **mínimo privilegio Sites.Selected**.
 
-El código refactorizado (Fases 0-4) está **verificado en vivo**. Pendiente: Fase 5 (borrado físico de `ejemplos/`) y la integración post-plan del auth con certificado en los 4 factories comunes (ver memoria).
+El código refactorizado (Fases 0-5) está **verificado en vivo**. Auth con certificado integrada en los 5 factories comunes (C#/Python/JS/PS/Java) con auto-detección.
 
 ---
 

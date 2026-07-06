@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "priority-field-customizer-field-customizer": {
+      "components": [
+        {
+          "entrypoint": "./lib/extensions/priorityFieldCustomizer/PriorityFieldCustomizerFieldCustomizer.js",
+          "manifest": "./src/extensions/priorityFieldCustomizer/PriorityFieldCustomizerFieldCustomizer.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "PriorityFieldCustomizerFieldCustomizerStrings": "lib/extensions/priorityFieldCustomizer/loc/{locale}.js"
+  }
+}

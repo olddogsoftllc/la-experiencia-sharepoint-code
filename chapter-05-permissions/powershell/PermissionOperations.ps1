@@ -19,7 +19,7 @@ param()
 $script:GraphHeaders = $null
 
 function Connect-GraphApi {
-    <cmdletbinding()
+    [CmdletBinding()]
     param()
 
     try {
@@ -51,7 +51,7 @@ function Connect-GraphApi {
 }
 
 function New-AnonymousSharingLink {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$SiteId,
@@ -95,7 +95,7 @@ function New-AnonymousSharingLink {
 }
 
 function New-OrganizationSharingLink {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$SiteId,
@@ -139,7 +139,7 @@ function New-OrganizationSharingLink {
 }
 
 function Grant-UserAccess {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$SiteId,
@@ -191,7 +191,7 @@ function Grant-UserAccess {
 }
 
 function Get-ItemPermissions {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$SiteId,
@@ -240,7 +240,7 @@ function Get-ItemPermissions {
 }
 
 function Remove-Permission {
-    <cmdletbinding()
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$SiteId,
@@ -271,12 +271,56 @@ function Remove-Permission {
     }
 }
 
-# Main execution
+function Get-SitePermissions {
+    <#
+        .SYNOPSIS
+        Lista los permisos de un sitio. Solo lectura.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$SiteId
+    )
+
+    try {
+        if (-not $script:GraphHeaders) { Connect-GraphApi }
+        Write-Host "Listing permissions of site: $SiteId" -ForegroundColor Cyan
+
+        $uri = "https://graph.microsoft.com/v1.0/sites/$SiteId/permissions"
+        $response = Invoke-RestMethod -Uri $uri -Headers $script:GraphHeaders -Method Get
+
+        Write-Host "Found $($response.value.Count) site permissions:" -ForegroundColor Green
+        Write-Host "-" * 80
+        foreach ($permission in $response.value) {
+            Write-Host "Permission ID: $($permission.id)" -ForegroundColor Yellow
+            Write-Host "  Roles: $($permission.roles -join ', ')"
+            Write-Host "-" * 80
+        }
+        return $response.value
+    }
+    catch {
+        Write-Error "Error listing site permissions: $_"
+        throw
+    }
+}
+
+# Main execution: demo de solo lectura contra el sitio de pruebas book-test.
 try {
     Write-Host "=== SharePoint Permission Operations Example ===" -ForegroundColor Yellow
 
-    Write-Host "`nPermission operations module loaded successfully!" -ForegroundColor Green
-    Write-Host "Use the functions to manage sharing links and permissions."
+    if (-not $script:GraphHeaders) { Connect-GraphApi }
+
+    $hostname = if ($env:SHAREPOINT_HOSTNAME) { $env:SHAREPOINT_HOSTNAME } else { "olddogsoft1.sharepoint.com" }
+    $sitePath = if ($env:SHAREPOINT_SITE_PATH) { $env:SHAREPOINT_SITE_PATH } else { "book-test" }
+
+    # Resolver el sitio por path para obtener su ID.
+    $encodedPath = [uri]::EscapeDataString("sites/$sitePath")
+    $siteUri = "https://graph.microsoft.com/v1.0/sites/${hostname}:/$encodedPath"
+    $site = Invoke-RestMethod -Uri $siteUri -Headers $script:GraphHeaders -Method Get
+
+    Get-SitePermissions -SiteId $site.id
+
+    Write-Host "`nPermission operations completed successfully!" -ForegroundColor Green
 }
 catch {
     Write-Error "Script execution failed: $_"

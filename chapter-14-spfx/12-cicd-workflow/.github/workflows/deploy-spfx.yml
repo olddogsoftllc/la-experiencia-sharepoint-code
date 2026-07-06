@@ -1,0 +1,68 @@
+# Reusable CI/CD workflow for an SPFx solution.
+#
+# Drop this file (or a copy) into the .github/workflows/ folder of any of the
+# chapter-14-spfx projects. It builds the solution, packages the .sppkg, and
+# deploys it to the tenant App Catalog using a service principal + certificate
+# (no username/password, in line with the book's cert-auth theme).
+#
+# Required GitHub repository secrets:
+#   SP_TENANT_ID            Azure AD tenant id
+#   SP_CLIENT_ID            App registration (client) id
+#   SP_CERTIFICATE_THUMBPRINT  Thumbprint of the cert uploaded to the app registration
+#   SP_CERTIFICATE_BASE64   The .pfx/.cer exported as base64 (CI-only, ephemeral)
+#   APP_CATALOG_URL         e.g. https://contoso.sharepoint.com/sites/appcatalog
+#
+# Optional:
+#   SPFX_SOLUTION_FOLDER    Path to the SPFx project (defaults to the repo root)
+name: Build & deploy SPFx solution
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18.20.8'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ vars.SPFX_SOLUTION_FOLDER || '.' }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ vars.SPFX_SOLUTION_FOLDER || '.' }}
+        run: npm ci
+
+      - name: Build (production bundle)
+        working-directory: ${{ vars.SPFX_SOLUTION_FOLDER || '.' }}
+        run: gulp bundle --ship
+
+      - name: Package solution
+        working-directory: ${{ vars.SPFX_SOLUTION_FOLDER || '.' }}
+        run: gulp package-solution --ship
+
+      - name: Decode signing certificate
+        run: |
+          echo "${{ secrets.SP_CERTIFICATE_BASE64 }}" | base64 -d > $RUNNER_TEMP/cert.pfx
+          echo "CERT_PATH=$RUNNER_TEMP/cert.pfx" >> $GITHUB_ENV
+
+      - name: Deploy to App Catalog
+        uses: pnp/action-deploy-spfx@v3
+        with:
+          site-url: ${{ secrets.APP_CATALOG_URL }}
+          spfx-file: ${{ vars.SPFX_SOLUTION_FOLDER || '.' }}/sharepoint/solution/*.sppkg
+          authentication: 'servicePrincipal'
+          client-id: ${{ secrets.SP_CLIENT_ID }}
+          tenant-id: ${{ secrets.SP_TENANT_ID }}
+          certificate-thumbprint: ${{ secrets.SP_CERTIFICATE_THUMBPRINT }}
+          certificate-path: ${{ env.CERT_PATH }}
+          overwrite: true
+          skip-feature-deployment: true

@@ -1,0 +1,25 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "whichFolder": "subdir",
+    "solutionName": "hello-graph",
+    "environment": "spo",
+    "componentType": "webpart",
+    "template": "react",
+    "componentName": "HelloGraphWebPart",
+    "componentDescription": "Web Part React con hooks que consulta Microsoft Graph via MSGraphClientV3 con Property Pane",
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.8",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.24.0"
+    },
+    "version": "1.20.0",
+    "libraryName": "hello-graph",
+    "libraryId": "81d9b773-66cb-4e78-abb3-96652d13f816",
+    "packageManager": "npm",
+    "solutionShortDescription": "hello-graph description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false
+  }
+}

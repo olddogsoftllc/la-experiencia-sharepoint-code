@@ -13,62 +13,49 @@
 
 const axios = require('axios');
 const fs = require('fs');
-const qs = require('querystring');
 const path = require('path');
+const { getAccessToken } = require('la-experiencia-sharepoint-code/graphAuth');
+
+const GRAPH_BASE = 'https://graph.microsoft.com/v1.0';
 
 /**
- * SharePoint Document Operations class
+ * SharePoint Document Operations class. El access token se inyecta por constructor (DI).
  */
 class DocumentOperations {
-    constructor() {
-        this.tenantId = process.env.TENANT_ID;
-        this.clientId = process.env.CLIENT_ID;
-        this.clientSecret = process.env.CLIENT_SECRET;
-        this.accessToken = null;
-
-        this.validateConfig();
+    /** @param {string} accessToken Bearer token for Microsoft Graph (inyectado). */
+    constructor(accessToken) {
+        if (!accessToken) throw new Error('Se requiere un access token para DocumentOperations.');
+        this.accessToken = accessToken;
     }
 
-    validateConfig() {
-        const required = ['TENANT_ID', 'CLIENT_ID', 'CLIENT_SECRET'];
-        const missing = required.filter(key => !process.env[key]);
-
-        if (missing.length > 0) {
-            throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
-        }
-    }
-
-    /**
-     * Gets access token for Microsoft Graph
-     */
-    async getAccessToken() {
-        if (this.accessToken) return this.accessToken;
-
-        const tokenEndpoint = `https://login.microsoftonline.com/${this.tenantId}/oauth2/v2.0/token`;
-        const requestBody = {
-            client_id: this.clientId,
-            client_secret: this.clientSecret,
-            scope: 'https://graph.microsoft.com/.default',
-            grant_type: 'client_credentials'
-        };
-
-        const response = await axios.post(tokenEndpoint, qs.stringify(requestBody), {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        });
-
-        this.accessToken = response.data.access_token;
-        return this.accessToken;
-    }
-
-    /**
-     * Gets authenticated headers
-     */
+    /** @returns {Promise<{Authorization: string, 'Content-Type': string}>} */
     async getHeaders(contentType = 'application/json') {
-        const token = await this.getAccessToken();
         return {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${this.accessToken}`,
             'Content-Type': contentType
         };
+    }
+
+    /** Lists the document libraries (drives) of a site. Solo lectura. */
+    async listDrives(siteId) {
+        try {
+            console.log(`Listing document libraries of site: ${siteId}`);
+            const headers = await this.getHeaders();
+            const response = await axios.get(`${GRAPH_BASE}/sites/${siteId}/drives`, { headers });
+            const drives = response.data.value;
+            console.log(`Found ${drives.length} libraries:`);
+            console.log('-'.repeat(80));
+            drives.forEach((drive) => {
+                console.log(`Library: ${drive.name}`);
+                console.log(`  ID: ${drive.id}`);
+                console.log(`  Type: ${drive.driveType}`);
+                console.log('-'.repeat(80));
+            });
+            return drives;
+        } catch (error) {
+            console.error('Error listing libraries:', error.response?.data?.error?.message || error.message);
+            throw error;
+        }
     }
 
     /**
@@ -246,11 +233,19 @@ class DocumentOperations {
 async function main() {
     try {
         console.log('=== SharePoint Document Operations Example ===\n');
+        const token = await getAccessToken();
+        const docOps = new DocumentOperations(token);
 
-        const docOps = new DocumentOperations();
+        const hostname = process.env.SHAREPOINT_HOSTNAME || 'olddogsoft1.sharepoint.com';
+        const sitePath = process.env.SHAREPOINT_SITE_PATH || 'book-test';
 
-        console.log('Document operations class initialized successfully!');
-        console.log('Use the methods to perform upload, download, and search operations.');
+        // Resolver el sitio por path para obtener su ID.
+        const siteUrl = `${GRAPH_BASE}/sites/${encodeURIComponent(hostname)}:/sites/${encodeURIComponent(sitePath)}`;
+        const siteResp = await axios.get(siteUrl, { headers: await docOps.getHeaders() });
+
+        await docOps.listDrives(siteResp.data.id);
+
+        console.log('\nDocument operations completed successfully!');
     } catch (error) {
         console.error('Error:', error.message);
         process.exit(1);

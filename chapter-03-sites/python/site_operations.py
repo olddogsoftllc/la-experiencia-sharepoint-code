@@ -3,248 +3,149 @@ site_operations.py
 Chapter 03: Sites
 
 SharePoint Site Operations Example
-Demonstrates listing, creating, and retrieving SharePoint sites
+Demonstrates listing, creating, and retrieving SharePoint sites.
 
-Required environment variables:
-    - TENANT_ID
-    - CLIENT_ID
-    - CLIENT_SECRET
+Usa el módulo de auth compartido (common/laexperiencia_sharepoint): el access token
+se inyecta por constructor (DI), no se obtiene dentro de la clase.
 """
 
-import os
 import sys
 from typing import Dict, List, Optional
+
 import requests
+
+from laexperiencia_sharepoint import get_access_token
+
+GRAPH_BASE = "https://graph.microsoft.com/v1.0"
 
 
 class SiteOperations:
-    """SharePoint Site Operations handler"""
+    """SharePoint Site Operations handler."""
 
-    def __init__(self):
-        self.tenant_id = os.environ.get('TENANT_ID')
-        self.client_id = os.environ.get('CLIENT_ID')
-        self.client_secret = os.environ.get('CLIENT_SECRET')
-        self.access_token = None
-
-        self._validate_config()
-
-    def _validate_config(self) -> None:
-        """Validates configuration"""
-        required = ['TENANT_ID', 'CLIENT_ID', 'CLIENT_SECRET']
-        missing = [key for key in required if not os.environ.get(key)]
-
-        if missing:
-            raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
-
-    def _get_access_token(self) -> str:
-        """Gets access token for Microsoft Graph"""
-        if self.access_token:
-            return self.access_token
-
-        token_endpoint = (
-            f"https://login.microsoftonline.com/{self.tenant_id}/oauth2/v2.0/token"
-        )
-        request_data = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'scope': 'https://graph.microsoft.com/.default',
-            'grant_type': 'client_credentials'
-        }
-
-        response = requests.post(token_endpoint, data=request_data)
-        response.raise_for_status()
-
-        self.access_token = response.json()['access_token']
-        return self.access_token
+    def __init__(self, access_token: str):
+        if not access_token:
+            raise ValueError("Se requiere un access token para SiteOperations.")
+        self.access_token = access_token
 
     def _get_headers(self) -> Dict[str, str]:
-        """Gets authenticated headers"""
-        token = self._get_access_token()
         return {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json'
+            "Authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json",
         }
 
     def list_sites(self) -> List[Dict]:
-        """
-        Lists all sites in the organization
-
-        Returns:
-            List of site dictionaries
-        """
+        """Lists all sites in the organization."""
         try:
             print("Fetching all sites...\n")
-
-            headers = self._get_headers()
-            response = requests.get(
-                'https://graph.microsoft.com/v1.0/sites',
-                headers=headers
-            )
+            response = requests.get(f"{GRAPH_BASE}/sites", headers=self._get_headers())
             response.raise_for_status()
 
-            sites = response.json()['value']
+            sites = response.json()["value"]
             print(f"Found {len(sites)} sites:")
             print("-" * 80)
-
             for site in sites:
-                print(f"Name: {site['name']}")
+                print(f"Display Name: {site.get('displayName', site.get('name', 'N/A'))}")
                 print(f"  ID: {site['id']}")
                 print(f"  Web URL: {site['webUrl']}")
-                print(f"  Display Name: {site.get('displayName', 'N/A')}")
                 print("-" * 80)
-
             return sites
-
         except requests.exceptions.RequestException as e:
             print(f"Error listing sites: {e}")
             raise
 
     def get_site(self, hostname: str, site_path: str) -> Optional[Dict]:
-        """
-        Gets a specific site by hostname and site path
-
-        Args:
-            hostname: The hostname of the site (e.g., contoso.sharepoint.com)
-            site_path: The site path (e.g., sites/marketing)
-
-        Returns:
-            Site dictionary or None
-        """
+        """Gets a specific site by hostname and site path (e.g. contoso.sharepoint.com / book-test)."""
         try:
             print(f"Fetching site: {hostname}/sites/{site_path}")
-
-            headers = self._get_headers()
-            encoded_path = requests.utils.quote(f"sites/{site_path}")
-            url = f"https://graph.microsoft.com/v1.0/sites/{hostname}:{encoded_path}"
-
-            response = requests.get(url, headers=headers)
+            # Formato Graph path-based: /sites/{hostname}:/sites/{path}
+            url = (
+                f"{GRAPH_BASE}/sites/"
+                f"{requests.utils.quote(hostname, safe='')}:/sites/"
+                f"{requests.utils.quote(site_path, safe='')}"
+            )
+            response = requests.get(url, headers=self._get_headers())
             response.raise_for_status()
 
             site = response.json()
             print("\nSite found:")
-            print(f"  Name: {site['name']}")
+            print(f"  Display Name: {site.get('displayName', site.get('name', 'N/A'))}")
             print(f"  ID: {site['id']}")
             print(f"  Web URL: {site['webUrl']}")
             print(f"  Description: {site.get('description', 'N/A')}")
-
             return site
-
         except requests.exceptions.RequestException as e:
             print(f"Error getting site: {e}")
             raise
 
     def get_site_by_id(self, site_id: str) -> Optional[Dict]:
-        """
-        Gets site by its unique identifier
-
-        Args:
-            site_id: The site ID
-
-        Returns:
-            Site dictionary or None
-        """
+        """Gets site by its unique identifier."""
         try:
             print(f"Fetching site by ID: {site_id}")
-
-            headers = self._get_headers()
-            response = requests.get(
-                f"https://graph.microsoft.com/v1.0/sites/{site_id}",
-                headers=headers
-            )
+            response = requests.get(f"{GRAPH_BASE}/sites/{site_id}", headers=self._get_headers())
             response.raise_for_status()
-
             site = response.json()
             print("\nSite found:")
-            print(f"  Name: {site['name']}")
+            print(f"  Display Name: {site.get('displayName', site.get('name', 'N/A'))}")
             print(f"  Web URL: {site['webUrl']}")
-
             return site
-
         except requests.exceptions.RequestException as e:
             print(f"Error getting site by ID: {e}")
             raise
 
     def get_root_site(self) -> Optional[Dict]:
-        """
-        Gets the root site of the organization
-
-        Returns:
-            Site dictionary or None
-        """
+        """Gets the root site of the organization."""
         try:
             print("Fetching root site...")
-
-            headers = self._get_headers()
-            response = requests.get(
-                'https://graph.microsoft.com/v1.0/sites/root',
-                headers=headers
-            )
+            response = requests.get(f"{GRAPH_BASE}/sites/root", headers=self._get_headers())
             response.raise_for_status()
-
             site = response.json()
             print("\nRoot site:")
-            print(f"  Name: {site['name']}")
+            print(f"  Display Name: {site.get('displayName', site.get('name', 'N/A'))}")
             print(f"  ID: {site['id']}")
             print(f"  Web URL: {site['webUrl']}")
-
             return site
-
         except requests.exceptions.RequestException as e:
             print(f"Error getting root site: {e}")
             raise
 
     def search_sites(self, keyword: str) -> List[Dict]:
-        """
-        Searches for sites by keyword
-
-        Args:
-            keyword: Search keyword
-
-        Returns:
-            List of matching site dictionaries
-        """
+        """Searches for sites by keyword."""
         try:
             print(f"Searching for sites with keyword: '{keyword}'")
-
-            headers = self._get_headers()
             response = requests.get(
-                f"https://graph.microsoft.com/v1.0/sites?search={keyword}",
-                headers=headers
+                f"{GRAPH_BASE}/sites?search={keyword}", headers=self._get_headers()
             )
             response.raise_for_status()
-
-            sites = response.json()['value']
+            sites = response.json()["value"]
             print(f"\nFound {len(sites)} matching sites:")
             print("-" * 80)
-
             for site in sites:
-                print(f"Name: {site['name']}")
+                print(f"Display Name: {site.get('displayName', site.get('name', 'N/A'))}")
                 print(f"  Web URL: {site['webUrl']}")
                 print(f"  Description: {site.get('description', 'N/A')}")
                 print("-" * 80)
-
             return sites
-
         except requests.exceptions.RequestException as e:
             print(f"Error searching sites: {e}")
             raise
 
 
 def main():
-    """Main execution function"""
+    """Construye el token con el módulo común y ejecuta una demo de solo lectura contra book-test."""
     try:
         print("=== SharePoint Site Operations Example ===\n")
+        import os
 
-        site_ops = SiteOperations()
+        token = get_access_token()
+        site_ops = SiteOperations(token)
 
-        # Get root site
-        site_ops.get_root_site()
+        hostname = os.environ.get("SHAREPOINT_HOSTNAME", "olddogsoft1.sharepoint.com")
+        site_path = os.environ.get("SHAREPOINT_SITE_PATH", "book-test")
 
-        # List all sites
+        site_ops.get_site(hostname, site_path)
         site_ops.list_sites()
 
         print("\nSite operations completed successfully!")
-
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)
