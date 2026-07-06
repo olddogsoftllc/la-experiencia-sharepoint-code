@@ -5,6 +5,7 @@ import {
 } from '@microsoft/sp-listview-extensibility';
 
 import styles from './PriorityFieldCustomizerFieldCustomizer.module.scss';
+import { getPriorityClass, buildBadgeText } from './priorityUtils';
 
 const LOG_SOURCE: string = 'PriorityFieldCustomizerFieldCustomizer';
 
@@ -17,7 +18,7 @@ export interface IPriorityFieldCustomizerFieldCustomizerProperties {
  * Field Customizer that renders the cell value as a colored badge depending
  * on the priority text: "high" -> red, "low" -> green, anything else -> grey.
  *
- * Covers the book's cap14 "Tipos de Extensiones" (Field Customizer).
+ * Covers the book's chapter 14 "Types of Extensions" (Field Customizer).
  */
 export default class PriorityFieldCustomizerFieldCustomizer
   extends BaseFieldCustomizer<IPriorityFieldCustomizerFieldCustomizerProperties> {
@@ -29,20 +30,18 @@ export default class PriorityFieldCustomizerFieldCustomizer
 
   public onRenderCell(event: IFieldCustomizerCellEventParameters): void {
     const value: string = (event.fieldValue as string) ?? '';
-    const lower: string = value.toLowerCase();
-    const cls: string = lower.indexOf('high') >= 0
+    const cls: string = getPriorityClass(value) === 'high'
       ? styles.high
-      : lower.indexOf('low') >= 0
+      : getPriorityClass(value) === 'low'
         ? styles.low
         : styles.normal;
 
     event.domElement.classList.add(styles.priorityFieldCustomizer);
     event.domElement.innerText = '';
 
-    const prefix: string = this.properties.prefix ? `${this.properties.prefix}: ` : '';
     const badge: HTMLSpanElement = document.createElement('span');
     badge.className = `${styles.badge} ${cls}`;
-    badge.textContent = `${prefix}${value}`;
+    badge.textContent = buildBadgeText(value, this.properties.prefix);
     event.domElement.appendChild(badge);
   }
 

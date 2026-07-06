@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Stack, Text } from '@fluentui/react';
 import styles from './TeamsEnabledWebPart.module.scss';
 import type { ITeamsEnabledWebPartProps } from './ITeamsEnabledWebPartProps';
+import { hostRunningSuffix } from '../teamsUtils';
 
 const TeamsEnabledWebPart: React.FunctionComponent<ITeamsEnabledWebPartProps> = (props) => {
   const {
@@ -21,7 +22,7 @@ const TeamsEnabledWebPart: React.FunctionComponent<ITeamsEnabledWebPartProps> = 
       <Stack tokens={{ childrenGap: 8 }}>
         <Text>
           Host: <strong>{host}</strong>
-          {hasTeamsContext ? ' (running inside Microsoft Teams)' : ' (running in SharePoint)'}
+          {hostRunningSuffix(hasTeamsContext)}
         </Text>
         <Text>Theme: <strong>{theme}</strong>{isDarkTheme ? ' (inverted)' : ''}</Text>
         <Text className={styles.note}>

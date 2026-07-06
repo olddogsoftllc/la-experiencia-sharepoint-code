@@ -22,7 +22,7 @@ interface ICollection<T> {
 
 /**
  * Graph wrapper that lists a site's document libraries (drives) and the root
- * children of a drive. Connects to the book's cap4 (Documents).
+ * children of a drive. Connects to the book's chapter 4 (Documents).
  */
 export class GraphService {
   constructor(private readonly client: MSGraphClientV3) {}

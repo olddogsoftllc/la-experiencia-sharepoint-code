@@ -8,6 +8,7 @@ import type { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import styles from './NoFrameworkWebPartWebPart.module.scss';
 import * as strings from 'NoFrameworkWebPartWebPartStrings';
+import { buildMarkup } from './noFrameworkUtils';
 
 export interface INoFrameworkWebPartWebPartProps {
   heading: string;
@@ -17,7 +18,7 @@ export interface INoFrameworkWebPartWebPartProps {
  * Web Part built with vanilla TypeScript (no React, no UI framework).
  * Renders straight into this.domElement and cleans up its own listeners.
  *
- * Covers the book's cap14 "Web Part sin React (No Framework)".
+ * Covers the book's chapter 14 "Web Part without React (No Framework)".
  */
 export default class NoFrameworkWebPartWebPart extends BaseClientSideWebPart<INoFrameworkWebPartWebPartProps> {
 
@@ -34,13 +35,12 @@ export default class NoFrameworkWebPartWebPart extends BaseClientSideWebPart<INo
     const teamsClass: string = !!this.context.sdks.microsoftTeams ? styles.teams : '';
     const darkClass: string = this._isDarkTheme ? styles.dark : '';
 
-    this.domElement.innerHTML = `
-      <section class="${styles.noFrameworkWebPart} ${teamsClass} ${darkClass}">
-        <h2>${this.properties.heading}</h2>
-        <p>Sitio: <strong>${site}</strong></p>
-        <p>Hola, <strong>${user}</strong></p>
-        <button class="${styles.btn}">Recargar</button>
-      </section>`;
+    this.domElement.innerHTML = buildMarkup(this.properties.heading, site, user, {
+      containerClass: styles.noFrameworkWebPart,
+      teamsClass,
+      darkClass,
+      btnClass: styles.btn
+    });
 
     const btn: HTMLButtonElement | null = this.domElement.querySelector(`.${styles.btn}`);
     btn?.addEventListener('click', this._onReload);

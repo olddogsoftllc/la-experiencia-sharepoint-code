@@ -25,7 +25,7 @@ export const QUICK_VIEW_REGISTRY_ID: string = 'TicketsAce_QUICK_VIEW';
  * Adaptive Card Extension for Viva Connections: shows a count of open tickets
  * on the dashboard card and a list in the QuickView.
  *
- * Covers the book's cap14 "Adaptive Card Extensions (ACE) en detalle".
+ * Covers the book's chapter 14 "Adaptive Card Extensions (ACE) in detail".
  * The ticket list is seeded with demo data; wire `loadTickets()` to Microsoft
  * Graph (`/me/planner/tasks`, scope `Tasks.Read`) for a real feed.
  */

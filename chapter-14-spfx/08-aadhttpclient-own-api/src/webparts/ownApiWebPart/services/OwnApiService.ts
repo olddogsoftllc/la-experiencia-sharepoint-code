@@ -7,7 +7,7 @@ import { AadHttpClient } from '@microsoft/sp-http';
  * API's App ID URI is declared as a webApiPermissionRequest in
  * package-solution.json and approved in SharePoint Admin Center → API Access.
  *
- * Covers the book's cap14 "MSGraphClient vs AadHttpClient".
+ * Covers the book's chapter 14 "MSGraphClient vs AadHttpClient".
  */
 export class OwnApiService {
   constructor(

@@ -6,6 +6,7 @@ import {
 } from '@microsoft/sp-application-base';
 
 import * as strings from 'FooterApplicationCustomizerApplicationCustomizerStrings';
+import { resolveFooterText, footerBarStyle } from './footerUtils';
 
 const LOG_SOURCE: string = 'FooterApplicationCustomizerApplicationCustomizer';
 
@@ -18,7 +19,7 @@ export interface IFooterApplicationCustomizerApplicationCustomizerProperties {
  * Application Customizer that injects a footer bar into the Bottom placeholder
  * of every modern page where the extension is active.
  *
- * Covers the book's cap14 "Tipos de Extensiones" (Application Customizer).
+ * Covers the book's chapter 14 "Types of Extensions" (Application Customizer).
  */
 export default class FooterApplicationCustomizerApplicationCustomizer
   extends BaseApplicationCustomizer<IFooterApplicationCustomizerApplicationCustomizerProperties> {
@@ -49,14 +50,15 @@ export default class FooterApplicationCustomizerApplicationCustomizer
       return;
     }
 
-    const footerText: string = this.properties.footerText ?? 'Powered by SPFx';
+    const footerText: string = resolveFooterText(this.properties.footerText);
+    const style = footerBarStyle();
 
     const bar: HTMLDivElement = document.createElement('div');
     bar.className = 'footer-bar';
-    bar.style.backgroundColor = '#0078d4';
-    bar.style.color = '#ffffff';
-    bar.style.padding = '6px 16px';
-    bar.style.fontSize = '12px';
+    bar.style.backgroundColor = style.backgroundColor;
+    bar.style.color = style.color;
+    bar.style.padding = style.padding;
+    bar.style.fontSize = style.fontSize;
     bar.textContent = footerText;
 
     this._bottomPlaceholder.domElement.innerHTML = '';

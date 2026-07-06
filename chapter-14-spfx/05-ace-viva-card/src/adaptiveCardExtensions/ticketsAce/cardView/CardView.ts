@@ -11,6 +11,7 @@ import {
   ITicketsAceAdaptiveCardExtensionState,
   QUICK_VIEW_REGISTRY_ID
 } from '../TicketsAceAdaptiveCardExtension';
+import { countOpenTickets, buildOpenTicketsHeader } from '../ticketsUtils';
 
 export class CardView extends BaseComponentsCardView<
   ITicketsAceAdaptiveCardExtensionProps,
@@ -18,7 +19,7 @@ export class CardView extends BaseComponentsCardView<
   ComponentsCardViewParameters
 > {
   public get cardViewParameters(): ComponentsCardViewParameters {
-    const openCount: number = this.state.tickets.filter((t) => t.status === 'open').length;
+    const openCount: number = countOpenTickets(this.state.tickets);
     return BasicCardView({
       cardBar: {
         componentName: 'cardBar',
@@ -26,7 +27,7 @@ export class CardView extends BaseComponentsCardView<
       },
       header: {
         componentName: 'text',
-        text: `${openCount} open ticket${openCount === 1 ? '' : 's'}`
+        text: buildOpenTicketsHeader(openCount)
       },
       footer: {
         componentName: 'cardButton',

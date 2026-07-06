@@ -11,6 +11,7 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import * as strings from 'TeamsEnabledWebPartWebPartStrings';
 import TeamsEnabledWebPart from './components/TeamsEnabledWebPart';
 import { ITeamsEnabledWebPartProps } from './components/ITeamsEnabledWebPartProps';
+import { resolveThemeName } from './teamsUtils';
 
 export interface ITeamsEnabledWebPartWebPartProps {
   title: string;
@@ -60,7 +61,7 @@ export default class TeamsEnabledWebPartWebPart extends BaseClientSideWebPart<IT
       return;
     }
     this._isDarkTheme = !!currentTheme.isInverted;
-    this._theme = currentTheme.isInverted ? 'dark' : 'default';
+    this._theme = resolveThemeName(currentTheme.isInverted);
   }
 
   protected onDispose(): void {

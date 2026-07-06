@@ -20,7 +20,7 @@ interface ICollection {
 
 /**
  * Graph wrapper that reads a site's permission entries and classifies errors
- * (network / 401 / 403 / 404 / 429) with telemetry. Connects to cap5.
+ * (network / 401 / 403 / 404 / 429) with telemetry. Connects to chapter 5.
  *
  * NOTE: `/sites/{id}/permissions` is an admin operation. Under Sites.Selected
  * it typically returns 403 — the component surfaces that explicitly.

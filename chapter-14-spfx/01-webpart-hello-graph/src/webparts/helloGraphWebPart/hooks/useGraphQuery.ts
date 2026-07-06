@@ -11,7 +11,7 @@ export interface IGraphQueryState<T> {
  * React hook that runs an async fetcher (e.g. a Graph query) and tracks
  * loading / data / error. Re-runs whenever any value in `deps` changes.
  *
- * Mirrors the hook shown in the book (cap14, "React Hooks con Graph").
+ * Mirrors the hook shown in the book (chapter 14, "React Hooks with Graph").
  */
 export function useGraphQuery<T>(
   fetcher: () => Promise<T>,

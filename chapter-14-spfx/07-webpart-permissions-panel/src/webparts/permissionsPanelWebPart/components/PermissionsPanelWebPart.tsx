@@ -44,7 +44,7 @@ const PermissionsPanel: React.FunctionComponent<IPermissionsPanelWebPartProps> =
             <br />
             <strong>/sites/&#123;id&#125;/permissions</strong> is an admin operation: it typically
             needs admin consent and returns <strong>403</strong> under Sites.Selected
-            (see cap5 and the book&rsquo;s &ldquo;mínimo privilegio&rdquo; rule).
+            (see chapter 5 and the book&rsquo;s &ldquo;least privilege&rdquo; rule).
           </MessageBar>
         )}
 

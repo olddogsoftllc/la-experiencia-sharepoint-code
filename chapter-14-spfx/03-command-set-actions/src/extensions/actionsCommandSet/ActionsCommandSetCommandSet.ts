@@ -6,6 +6,7 @@ import {
   type ListViewStateChangedEventArgs
 } from '@microsoft/sp-listview-extensibility';
 import { Dialog } from '@microsoft/sp-dialog';
+import { shouldShowExport, buildNotifyMessage, buildExportMessage } from './commandUtils';
 
 const LOG_SOURCE: string = 'ActionsCommandSetCommandSet';
 
@@ -19,7 +20,7 @@ export interface IActionsCommandSetCommandSetProperties {
  *   COMMAND_1 "Export selection" — visible only when >= 1 row is selected.
  *   COMMAND_2 "Notify count"     — always visible; shows how many rows are selected.
  *
- * Covers the book's cap14 "Tipos de Extensiones" (Command Set).
+ * Covers the book's chapter 14 "Types of Extensions" (Command Set).
  */
 export default class ActionsCommandSetCommandSet extends BaseListViewCommandSet<IActionsCommandSetCommandSetProperties> {
 
@@ -41,14 +42,13 @@ export default class ActionsCommandSetCommandSet extends BaseListViewCommandSet<
 
     switch (event.itemId) {
       case 'COMMAND_1':
-        Dialog.alert(`Export: ${selectedCount} row(s) selected (demo).`).catch(() => {
+        Dialog.alert(buildExportMessage(selectedCount)).catch(() => {
           /* dialog dismissed */
         });
         break;
 
       case 'COMMAND_2': {
-        const prefix: string = this.properties.notifyPrefix ?? 'Selected';
-        Dialog.alert(`${prefix}: ${selectedCount} row(s).`).catch(() => {
+        Dialog.alert(buildNotifyMessage(this.properties.notifyPrefix, selectedCount)).catch(() => {
           /* dialog dismissed */
         });
         break;
@@ -65,7 +65,7 @@ export default class ActionsCommandSetCommandSet extends BaseListViewCommandSet<
     const exportCommand: Command | undefined = this.tryGetCommand('COMMAND_1');
     if (exportCommand) {
       // Visible only when at least one row is selected.
-      exportCommand.visible = (this.context.listView.selectedRows?.length ?? 0) > 0;
+      exportCommand.visible = shouldShowExport(this.context.listView.selectedRows?.length ?? 0);
     }
 
     // Refresh the command bar so visibility changes take effect.
