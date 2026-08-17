@@ -32,3 +32,8 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Graphify output (snapshots se commitean, cache no)
+graphify-out/cache/
+graphify-out/__pycache__/
+graphify-out/manifest.json
